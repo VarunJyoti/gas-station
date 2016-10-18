@@ -304,11 +304,11 @@ class Company extends Admin_Controller {
 	
 	** Delete page  
 	*/
-	public function delete($id)
+	public function delete($email)
 	{
-		if($id)
+		if($email)
 		{			
-			$result 			=	$this->company_model->deletePage($id);
+			$result 			=	$this->company_model->deletePage($email);
 			$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Record Deleted SuccesFully</span></div> ');			
 			//redirect("admin/company");
 				

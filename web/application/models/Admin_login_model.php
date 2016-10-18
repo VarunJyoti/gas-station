@@ -64,11 +64,13 @@ class Admin_login_model extends CI_Model {
 	
 	public function enduserlogin()
 	{		
-		$user = $this->get_by(array(
-			'email' => $this->input->post('email'),
+	
+		$email=$this->input->post('email');
+		$user = $this->get_valid_login_details(array(
 			'password' => $this->hash($this->input->post('password')),
 			'status' => '1'
-			), TRUE);
+			), TRUE,$email);
+			
 		
 		if(count($user))
 		{
@@ -88,7 +90,7 @@ class Admin_login_model extends CI_Model {
 		$page1 = $page->row_array();
 					 
 		$query1 = $this->db->last_query($page1);
-      // print_r($statusss); die('errr');
+		
 		
 		 if(!empty($page1))
 	       {  
@@ -126,9 +128,10 @@ class Admin_login_model extends CI_Model {
 				$status= $page1['status'];
 				//print($status); die('errr');
 				$shifts= $page1['shift'];
-			
-				$id= $page1['id'];
+			   $id= $page1['id'];
+			   
 			 
+		  
 			if(($daily < $daily_no) && ($status == 'close') && ($shiftss == 1))
 			   {
 				   
@@ -143,7 +146,7 @@ class Admin_login_model extends CI_Model {
 							  
 							  $shift = $shiftss;
 							  $status = "open";
-							  $data = array('id'=> NULL, 'login_time'=> $login_time,	'logout_time'=> "",	'user_id'=> $user_id,	'c_id'=> $c_id,	'shift'=>$shift,	'status'=> $status, 'daily_no'=> $daily_no);
+							  $data = array('id'=> NULL, 'login_time'=> $login_time,	'logout_time'=> "",	'user_id'=> $user_id,	'c_id'=> $c_id,	'shift'=>$shift,	'status'=> $status, 'daily_no'=> $daily_no, 'price_change_status'=> '0', 'pid'=>'', 'price_change'=>'0');
 							  $this->db->insert($table,$data);  
 				   
 			   }
@@ -161,68 +164,56 @@ class Admin_login_model extends CI_Model {
 							  
 							  $shift = $shifts+1;
 							  $status = "open";
-							  $data = array('id'=> NULL, 'login_time'=> $login_time,	'logout_time'=> "",	'user_id'=> $user_id,	'c_id'=> $c_id,	'shift'=>$shift,	'status'=> $status, 'daily_no'=> $daily_no);
+							  $data = array('id'=> NULL, 'login_time'=> $login_time,	'logout_time'=> "",	'user_id'=> $user_id,	'c_id'=> $c_id,	'shift'=>$shift,	'status'=> $status, 'daily_no'=> $daily_no, 'price_change_status'=> '0', 'pid'=>'', 'price_change'=>'0');
 							  $this->db->insert($table,$data);    
 				   
 			   }
 			   
-			   else if(($date == $current_date) && ($status == 'open') && ($shiftss == $shifts )) 
+			   else if(($daily == $daily_no) && ($status == 'open') && ($shiftss == $shifts )) 
 			   {
 				  
                   return true;
 				   
 			   }
-			   else if(($date != $current_date) && ($status == 'open') && ($shiftss == $shifts )) 
+			   
+			   else if(($daily == $daily_no) && ($status == 'close') && ($shiftss == $shifts )) 
+			   {
+				  //die('errr');
+                  redirect("admin/enduser/viewLast3records");
+				   
+			   }
+			   
+			   else if(($daily == $daily_no) && ($status == 'close') && ($shiftss != $shifts )) 
+			   {
+				  //die('errr shift not match');
+                  redirect("admin/enduser/viewLast3records");
+				   
+			   }
+			   
+			   	else if(($daily == $daily_no) && ($status == 'open') && ($shiftss < $shifts )) 
+			   {
+				  //die('errr shift not match');
+                  redirect("admin/enduser/viewLast3records");
+				   
+			   }
+			  
+			   
+			   
+			   else if(($daily < $daily_no) && ($status == 'close') && ($shiftss != $shifts )) 
 			   {
 				  
-                  return true;
+                  redirect("admin/enduser/viewLast3records");
 				   
 			   }
 			   // added 08-10-2016
-			    else if(($date == $current_date) && ($status == 'open') && ($shiftss < $shifts )) 
+			    else if(($daily < $daily_no) && ($status == 'open') && ($shiftss != $shifts )) 
 			   {
 				  
                  redirect("admin/enduser/viewLast3records");
 				   
 			   }
 			   
-			   else if(($date != $current_date) && ($status == 'open') && ($shiftss < $shifts )) 
-			   {
-				  
-                  redirect("admin/enduser/viewLast3records");
-				   
-			   }
-			   
-			    else if(($date == $current_date) && ($status == 'close') && ($shiftss < $shifts )) 
-			   {
-				  
-                 redirect("admin/enduser/viewLast3records");
-				   
-			   }
-			   
-			    else if(($date != $current_date) && ($status == 'close') && ($shiftss < $shifts )) 
-			   {
-				  
-                  redirect("admin/enduser/viewLast3records");
-				   
-			   }
-			   
-			    else if(($date == $current_date) && ($status == 'close') && ($shiftss == $shifts )) 
-			   {
-				  
-                  redirect("admin/enduser/viewLast3records");
-				   
-			   }
-			   
-			    else if(($date != $current_date) && ($status == 'close') && ($shiftss == $shifts )) 
-			   {
-				  
-                  redirect("admin/enduser/viewLast3records");
-				   
-			   }
-			   
-			   
-			   // added 08-10-2016
+			  
 			   
 			   else{
 				   $this->session->set_flashdata('login_error', '<div class="alert alert-danger display-hide" style="display: block;"><button class="close" data-close="alert"></button><span>Current Shift is not Closed! So you cant login<strong></strong>.</span></div> ');		
@@ -254,7 +245,7 @@ class Admin_login_model extends CI_Model {
 							  $daily_no = 1;
 							  $shift = 1;
 							  $status = "open";
-							  $data = array('id'=> NULL, 'login_time'=> $login_time,	'logout_time'=> "",	'user_id'=> $user_id,	'c_id'=> $c_id,	'shift'=>$shift,	'status'=> $status, 'daily_no'=> $daily_no);
+							  $data = array('id'=> NULL, 'login_time'=> $login_time,	'logout_time'=> "",	'user_id'=> $user_id,	'c_id'=> $c_id,	'shift'=>$shift,	'status'=> $status, 'daily_no'=> $daily_no, 'price_change_status'=> '0', 'pid'=>'', 'price_change'=>'0');
 							  $this->db->insert($table,$data);
 							  
 							//insert code for daily No table
@@ -266,7 +257,9 @@ class Admin_login_model extends CI_Model {
 							  // 07-10-2016
 						return true;
 			         }
-			 }
+			
+			}
+			 
 	}
 	
 	/*
@@ -304,7 +297,7 @@ class Admin_login_model extends CI_Model {
 	** delete user
 	*/
 	public function delete($id){
-		$this->db->where('id', $id)->delete($this->_table_name);
+		$this->db->where('email', $id)->delete($this->_table_name);
         return $this->db->affected_rows();
 	}
 	/*

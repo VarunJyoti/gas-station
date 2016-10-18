@@ -88,12 +88,7 @@ Edit Company  <small></small>
 							</div>
 						</div>
 						
-						<!--
-						<div class="form-group">
-			<label class="control-label col-md-3" for="title">Sell Price<span class="required">* </span></label>
-			<div class="col-md-4"><input class="form-control" id="s_price" value="<?php echo $page->s_price;?>" name="s_price" type="text" /><?php echo form_error('title'); ?></div>
-		</div>
-		-->
+						<input class="form-control" id="old_price"  value="<?php echo $page->old_price;?>" name="old_price" type="hidden" />
 						
 				<?php
    }

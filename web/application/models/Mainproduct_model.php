@@ -2,12 +2,13 @@
 class Mainproduct_model extends CI_Model{
 	protected $_table_name = 'price';
 	protected $_order_by = 'id';
-	protected static $db_fields = array('id', 'pid', 'price', 's_price', 'c_id', 'date_created', 'date_modified');
+	protected static $db_fields = array('id', 'pid', 'price', 's_price', 'old_price', 'c_id', 'date_created', 'date_modified');
 	
 	public $id;
 	public $pid; 
 	public $price; 
 	public $s_price; 
+	public $old_price; 
 	public $c_id; 
 	public $date_created; 
 	public $date_modified; 
@@ -34,26 +35,107 @@ class Mainproduct_model extends CI_Model{
 		if($id)
 		{
 			
+			$user_type = loginUser();
             
 			$table = 'price';
-		
-			//die('error');
-			$c_id  = $this->company_model->getCompanyLoginId();
-			$this->db->delete('price', array('pid' => $id,'c_id'=>$c_id));
-			//$last_query=$this->db->last_query();
-			//echo $last_query;die;
+		    
 			$price = $this->input->post("price");
+			$old_price = $this->input->post("old_price");
+			
+			$c_id  = $this->company_model->getCompanyLoginId();
+			 
+			
+			// price change code starts
+			
+			$PriceBeforeChange=$this->getProductPriceByIDandCID($id,$c_id)->s_price;
+			
+			if($price != $PriceBeforeChange)
+			{
+			$old_price = $PriceBeforeChange;	
+			}
+			
+			if(($user_type = 'enduser') && ($price != $PriceBeforeChange))
+	     {
+			 $result = $this->CheckPidExist($c_id,$id);
+			 if(empty($result))
+			 {
+		    $EndRowId = $this->getEnduserData($c_id)->id;
+			$EndRowPid = $this->getEnduserData($c_id)->pid;
+			$total_no_of_pid = substr_count($EndRowPid, ',')+1; 
+			$company_pid = count(unserialize($this->CountNoOfPId($c_id)->p_id));
+			
+			if($total_no_of_pid < $company_pid)
+			{
+				 
+			
+			$pid1= $EndRowPid;
+			$pid2= $id;
+			if($pid1 =='') 
+			{
+			$pid= $pid2;
+			}
+			else{
+				$pid= $pid1.",".$pid2;
+				
+			}
+			
+			$data1 = array('price_change_status' =>'0', 'pid'=>$pid);
+			$this->db->where('id', $EndRowId);
+            $this->db->update('daily_shift', $data1);
+			
+			$this->db->delete('price', array('pid' => $id,'c_id'=>$c_id));
 			$s_price = $this->input->post("price");
+		
 		    $modified_date  = date("Y-m-d H:i:s", time());
 		
 			$modified_date= date("Y-m-d H:i:s", time());
 			
-			$data = array('pid'=> $id,'c_id'=> $c_id,'price'=> $price, 's_price'=> $s_price,  'date_modified'=> $modified_date);
+			$data = array('pid'=> $id,'c_id'=> $c_id,'price'=> $price, 's_price'=> $s_price, 'old_price'=> $old_price,  'date_modified'=> $modified_date);
 			
 			$insert=$this->db->insert($table ,$data);
 			
-
+			 }
+			 
+			 else{
+				
+			$data1 = array('price_change_status' =>'1', 'pid'=>$EndRowPid);
+			$this->db->where('id', $EndRowId);
+            $this->db->update('daily_shift', $data1); 
+			 }
+			 
+			    }
+		 else{
+			 
+			$EndRowId = $this->getEnduserData($c_id)->id;
+			$EndRowPid = $this->getEnduserData($c_id)->pid;
+			$data2 = array('price_change_status' =>'1', 'pid'=>$EndRowPid);
+			$this->db->where('id', $EndRowId);
+            $this->db->update('daily_shift', $data2);
+			 
+		    redirect("admin/enduser/pricechange"); 
+				 
+		}
 			
+	 }
+			 // price change code ends
+			 
+			 else if($user_type = 'admin')
+				 
+				 {
+			 
+			$this->db->delete('price', array('pid' => $id,'c_id'=>$c_id));
+			$s_price = $this->input->post("price");
+		
+		    $modified_date  = date("Y-m-d H:i:s", time());
+		
+			$modified_date= date("Y-m-d H:i:s", time());
+			
+			$data = array('pid'=> $id,'c_id'=> $c_id,'price'=> $price, 's_price'=> $s_price, 'old_price'=> $old_price,  'date_modified'=> $modified_date);
+			
+			$insert=$this->db->insert($table ,$data);
+			
+          
+				 }
 			
 			if($insert !== 0){
 				return true;
@@ -69,6 +151,7 @@ class Mainproduct_model extends CI_Model{
 	
 	
 	public function price_insert($data) {
+		
 $data1 = array(
            'price' => $data,
         );
@@ -170,6 +253,72 @@ return $page;
 
 
 	}
+	
+	
+	public function getProductPriceByIDandCID($id,$cid) 
+	{	
+		$this->db->where("pid",$id);
+		$c_id = $this->company_model->getCompanyLoginId();
+		$this->db->where("c_id",$cid);
+		$page = $this->db->get('price')->row_object();
+		$q = $this->db->last_query($page);
+		
+
+		return $page;
+	}
+	
+	public function getEnduserData($cid) 
+	{	
+	    $userid = unserialize($this->session->userdata('admin'));
+		$user_id = $userid['id'];
+		//print_r($user_id); die('errr');
+		$this->db->where("user_id",$user_id);
+		$this->db->where("c_id",$cid);
+		$this->db->where("status",'open');
+		
+		$this->db->order_by("daily_no", 'DESC');
+		$page = $this->db->get('daily_shift')->row_object();
+		$q = $this->db->last_query($page);
+		
+
+		return $page;
+	}
+	
+	public function CheckPidExist($cid,$pid) 
+	{	
+	    $userid = unserialize($this->session->userdata('admin'));
+		$user_id = $userid['id'];
+		//print_r($user_id); die('errr');
+		$this->db->where("user_id",$user_id);
+		$this->db->where("c_id",$cid);
+		$this->db->where("status",'open');
+		$this->db->like("pid", $pid);
+		
+		$this->db->order_by("daily_no", 'DESC');
+		$page = $this->db->get('daily_shift')->row_object();
+		$q = $this->db->last_query($page);
+		//print_r($q); die('errrrrr');
+
+		return $page;
+	}
+	
+	
+	public function CountNoOfPId($cid) 
+	{	
+	    $userid = unserialize($this->session->userdata('admin'));
+		$user_id = $userid['id'];
+	
+		$this->db->where("id",$cid);
+		
+		$query = $this->db->get('company')->row_object();;
+		
+		$q = $this->db->last_query($query);
+		
+
+		return $query;
+	}
+	
+	
 	
 }
 

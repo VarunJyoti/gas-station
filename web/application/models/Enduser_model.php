@@ -383,14 +383,48 @@ class Enduser_model extends CI_Model{
 	{
 		$result = $this->db->delete('drops_payout', array('id' => $id)); 
 		return $result;
+		
+		
 
 	}
 	
 	
+	public function CheckDailyEndEnry($id)
+	{
+	
+		$this->db->select('*');
+        $this->db->from('daily_entry');
+        //$this->db->where("c_id",$c_id);
+		$this->db->where("user_id", $id);
+		//$this->db->order_by('login_time','DESC');
+		$page = $this->db->get();
+		$page1 = $page->row_array();
+        return $page1;
+	}
+	
 	public function deleteEnduser($id)
 	{
+		
+		$page = $this->CheckDailyEndEnry($id);
+		if(empty($page))
+		{
+			
 		$result = $this->db->delete('admins', array('id' => $id)); 
 		return $result;
+		}
+		
+		else if(!empty($page))
+		{    
+	         
+			
+			$table1= 'cd_admins';
+			
+			$data1 = array('status'=> '0');
+			$this->db->where('id', $id);
+			$result = $this->db->update($table1, $data1);
+			return $result;
+		}
+		
 
 	}
 	

@@ -1,0 +1,1 @@
+{"virtualbox":{"/home/vagrant/gas-station":{"type":null,"mount_options":[],"guestpath":"/home/vagrant/gas-station","hostpath":"/Users/varunjyoti/gas-station","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"/Users/varunjyoti/gas-station","disabled":false,"__vagrantfile":true}}}

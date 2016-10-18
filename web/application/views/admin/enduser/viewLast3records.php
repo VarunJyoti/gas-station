@@ -51,7 +51,7 @@ width:30%;
 			</h3>
 			<div style="overflow-x:auto;">
 <div style="float:right;">
-     <form class="navbar-form"  action="<?php echo base_url('admin/enduser/Last3records');?>" method="GET">
+     <form class="navbar-form"  action="<?php echo base_url('admin/enduser/viewLast3records');?>" method="GET">
   <tr>
   
     
@@ -60,7 +60,7 @@ width:30%;
      <?php 
 	 
 	 $daily = $this->daily_shift_model->getEndShiftData();
-	 $daily_no= $daily['daily_no']-1;
+	 $daily_no= $daily['daily_no'];
 	 print_r($daily_no); 
      for($i=1; $i<= 3; $i++)
      {

@@ -53,14 +53,16 @@ class Login extends Admin_Controller {
 		} else 	{			
 				
 			$result = $this->admin_login_model->login();
-			//print_r($result);die;
+		
 			if($result) {
 				      // enduser shift authentication starts 
 					   $user_type = loginUser();
-					   //print_r($user_type );
+					   
 					   if($user_type=='enduser')
 					   {
+						  
 						$result1 = $this->admin_login_model->enduserlogin(); 
+						
                           if($result1 == false)
 						  {
 							 $this->session->set_flashdata('logout_success', '<div class="alert alert-success display-hide" style="display: block;"><button class="close" data-close="alert"></button><span>Successfull<strong></strong>has been logout.</span></div> ');				

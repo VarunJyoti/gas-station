@@ -9,8 +9,11 @@ class Enduser extends Admin_Controller {
 		$this->load->model('enduser_model','',TRUE);
 		$this->load->model('systemtool_m');	
 		$this->load->model('dropspayouts_model');
+		$this->load->model('company_model');
 		$this->load->model('gasolinereceived_model');
 		$this->load->model('admin_login_model');
+		$this->load->model('product_model');
+		$this->load->model('mainproduct_model');
 		$this->load->model('store_sales_model');
 		$this->load->model('daily_shift_model');
 		$this->load->library("ckeditor");
@@ -161,6 +164,92 @@ class Enduser extends Admin_Controller {
 	}
 	
 	
+	
+	public function drops()
+	{
+		
+			
+		$SITE_TITLE = SITE_TITLE;
+		$data['title'] = "$SITE_TITLE Admin || Add Page";
+		$data['error'] = "";
+	   $page2 	        =	$this->enduser_model->getallDrops();
+	   $data['page2']	=	$page2;
+	   $data['drops']	 =	$this->enduser_model->getallDropsReceived();
+	
+	   $data['payouts']   =	$this->enduser_model->getallPayoutCash();
+	  
+	   $page5 	=	$this->enduser_model->getallPayoutCredit();
+	   $data['page5']	=	$page5;
+	   
+		//print_r($page6);
+		//die('error');
+	   $data['page6']	=	$this->enduser_model->getSumPayoutCredit();
+	   $data['page7']	=	$this->enduser_model->getSumPayoutCash();
+	   $data['page8']	=	$this->enduser_model->getSumDropsreceived();
+		$this->layout('enduser/drops',$data);  
+	
+		
+	}
+	
+	
+	
+	public function payouts()
+	{
+		
+			
+		$SITE_TITLE = SITE_TITLE;
+		$data['title'] = "$SITE_TITLE Admin || Add Page";
+		$data['error'] = "";
+	   $page2 	        =	$this->enduser_model->getallDrops();
+	   $data['page2']	=	$page2;
+	   $data['drops']	 =	$this->enduser_model->getallDropsReceived();
+	
+	   $data['payouts']   =	$this->enduser_model->getallPayoutCash();
+	  
+	   $page5 	=	$this->enduser_model->getallPayoutCredit();
+	   $data['page5']	=	$page5;
+	   
+		//print_r($page6);
+		//die('error');
+	   $data['page6']	=	$this->enduser_model->getSumPayoutCredit();
+	   $data['page7']	=	$this->enduser_model->getSumPayoutCash();
+	   $data['page8']	=	$this->enduser_model->getSumDropsreceived();
+		$this->layout('enduser/payouts',$data);  
+	
+		
+	}
+	
+	
+	
+	
+	public function confirm_password()
+	{
+		
+			
+		$SITE_TITLE = SITE_TITLE;
+		$data['title'] = "$SITE_TITLE Admin || Add Page";
+		$data['error'] = "";
+	  
+		$this->layout('enduser/confirm_password',$data);  
+	
+		
+	}
+	
+	
+	public function enter_password()
+	{
+			
+		$SITE_TITLE = SITE_TITLE;
+		$data['title'] = "$SITE_TITLE Admin || Add Page";
+		$data['error'] = "";
+	  
+		$this->layout('enduser/enter_password',$data);  
+	
+	}
+
+
+	
+	
 		
 /*
 	** View Gasoline received
@@ -187,6 +276,116 @@ class Enduser extends Admin_Controller {
 	
 		
 	}
+	
+	/*
+	** Price Change code starts
+	*/
+	
+	
+	/*
+	** view page
+	*/
+	public function pricechange() {
+		
+		$SITE_TITLE = SITE_TITLE;
+		$data['title'] = "$SITE_TITLE Admin || Edit Page";
+		$page1 	=	$this->company_model->getCompanyId();
+		$p=$page1['0']->c_id;
+		$this->load->model('product_model');
+		$page1=	$this->company_model->getMainProducts();
+		$data['page1']	=	$page1; 
+		if($page1) {
+			$data['page1']	=	$page1;
+			$this->layout('enduser/pricechange',$data);
+				
+		} else {
+			redirect("admin/enduser");
+		}
+	
+		
+	}
+	
+	/*
+	** edit page
+	*/
+	
+	public function edit_main_price($id) {
+		
+		$SITE_TITLE = SITE_TITLE;
+		$data['title'] = "$SITE_TITLE Admin || Edit Page";
+		$page 			=	$this->mainproduct_model->getPage($id);
+		//print_r($page);die;
+		if(!$page) {
+		 $this->load->model('product_model');
+		 
+		 $data['page']	=	$this->product_model->getProductName($id);
+				
+		} else {
+			$data['page']	=	$page ;
+		}
+			$this->layout('enduser/edit_main_price',$data);
+	}
+	
+	
+	
+	/*
+	** Save Price
+	*/
+	public function saveprice()
+	{
+		$SITE_TITLE = SITE_TITLE;
+		$data['title'] = "$SITE_TITLE Admin || Add Page";
+		if($this->input->post('save_page'))
+		{
+			$id 	=	$this->input->post("p_id")?$this->input->post("p_id"):NULL;
+			
+			if($id)
+			{
+				
+				$page 	=	$this->mainproduct_model->savePage($id);
+				$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Record Updated SuccesFully</span></div> ');			
+				
+				redirect("admin/enduser/pricechange");
+
+			} 		
+			
+		} else {
+			redirect("admin/enduser/pricechange");
+		}
+	}
+	
+
+	
+	/*
+	** Price Change code Ends
+	*/
+	
+	
+	public function gasolinereceived()
+	{
+		
+			
+		$SITE_TITLE = SITE_TITLE;
+		$data['title'] = "$SITE_TITLE Admin || Add Page";
+		$data['error'] = "";
+	    $data['pid1'] 	=	$this->daily_shift_model->getProductId();
+		/*
+		$data['drops_total']  =	$this->daily_shift_model->getSumDropsReceived();
+		$data['payouts_total']  =	$this->daily_shift_model->getSumPayoutsReceived();
+		$data['received_total']  =	$this->daily_shift_model->getSumGasolineReceived();
+		$data['total_store_sales']  =	$this->store_sales_model->getTotalStoreSales();
+		$data['sale_total']  =	$this->daily_shift_model->getSumGasolineSale();
+		$data['Vroot_total']  =	$this->daily_shift_model->getSumGasolineVroot();
+		$data['Records']  =	$this->daily_shift_model->getGasolineRecords();
+		$data['RowId']  =	$this->daily_shift_model->getRowId();
+		$data['product_price']  =	$this->daily_shift_model->getProductPrice();
+		*/
+	  
+		$this->layout('enduser/gasolinereceived',$data);
+	
+		
+	}
+
 	
 	
 	
@@ -293,18 +492,52 @@ class Enduser extends Admin_Controller {
 				$page 	=	$this->dropspayouts_model->savePage($id);
 				$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Record Updated SuccesFully</span></div> ');			
 				
-				redirect("admin/enduser/form");
+				redirect("admin/enduser/drops");
 
 			} else {
 				$page 	=	$this->dropspayouts_model->savePage(NULL);
 				$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Entry Add SuccesFully</span></div> ');			
-				redirect("admin/enduser/form");
+				redirect("admin/enduser/drops");
 			}			
 			
 		} else {
 			redirect("admin/enduser/");
 		}
 	}
+	
+	
+	public function savedpayouts()
+	{
+		$SITE_TITLE = SITE_TITLE;
+		$data['title'] = "$SITE_TITLE Admin || Add Page";
+		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|xss_clean');
+		if($this->input->post('save_page'))
+		{
+			//print_r($this->input->post());
+		//	die("error");
+			$id 	=	$this->input->post("id")?$this->input->post("id"):NULL;
+			
+			if($id)
+			{
+				$page 	=	$this->dropspayouts_model->savePage($id);
+				$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Record Updated SuccesFully</span></div> ');			
+				
+				redirect("admin/enduser/payouts");
+
+			} else {
+				$page 	=	$this->dropspayouts_model->savePage(NULL);
+				$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Entry Add SuccesFully</span></div> ');			
+				redirect("admin/enduser/payouts");
+			}			
+			
+		} else {
+			redirect("admin/enduser/");
+		}
+	}
+	
+	
+	
+	
 	
 	
 	public function save_store_sales()
@@ -350,8 +583,6 @@ class Enduser extends Admin_Controller {
 		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|xss_clean');
 		if($this->input->post('save_page'))
 		{
-			//print_r($this->input->post());
-		//	die("error");
 			$id 	=	$this->input->post("id")?$this->input->post("id"):NULL;
 			
 			if($id)
@@ -367,7 +598,53 @@ class Enduser extends Admin_Controller {
 				redirect("admin/enduser/gasoline_received_form");
 			}			
 			
-		} else {
+		} 
+		// code for close_shift starts here
+		
+		else if($this->input->post('val') == 'close_shift')
+		{
+	
+			$id 	=	$this->input->post("id")?$this->input->post("id"):NULL;
+			
+			if($id)
+			{
+				$page 	=	$this->daily_shift_model->closeShift($id);
+				$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Record Updated SuccesFully</span></div> ');			
+				
+				redirect('/admin/login/logout', 'refresh');
+
+			} else {
+				$page 	=	$this->daily_shift_model->closeShift(NULL);
+				$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Entry Add SuccesFully</span></div> ');			
+				redirect('/admin/login/logout', 'refresh');
+			}			
+			
+		}
+		//code for close_daily starts here
+		
+		else if($this->input->post('val') == 'close_daily')
+		{
+		// die('close_daily');
+			$id 	=	$this->input->post("id")?$this->input->post("id"):NULL;
+			
+			if($id)
+			{
+				$page 	=	$this->daily_shift_model->CloseDaily($id);
+				$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Record Updated SuccesFully</span></div> ');			
+				
+				redirect('/admin/login/logout', 'refresh');
+
+			} else {
+				$page 	=	$this->daily_shift_model->CloseDaily(NULL);
+				$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Entry Add SuccesFully</span></div> ');			
+				redirect('/admin/login/logout', 'refresh');
+			}			
+			
+		}
+		
+		//
+		
+		else {
 			redirect("admin/enduser/");
 		}
 	}
@@ -381,7 +658,7 @@ class Enduser extends Admin_Controller {
 		if($this->input->post('close_page'))
 		{
 			//print_r($this->input->post());
-		//	die("error");
+		  // die("error");
 			$id 	=	$this->input->post("id")?$this->input->post("id"):NULL;
 			
 			if($id)
@@ -393,7 +670,7 @@ class Enduser extends Admin_Controller {
 
 			} else {
 				$page 	=	$this->daily_shift_model->closePage(NULL);
-				$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Entry Add SuccesFully</span></div> ');			
+				$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Password Does not match!</span></div> ');			
 				redirect("admin/enduser/{$page->id}");
 			}			
 			
@@ -565,6 +842,43 @@ class Enduser extends Admin_Controller {
 		}
 	}
 	
+	
+	public function edit_drops($id) {
+		$SITE_TITLE = SITE_TITLE;
+		$data['title'] = "$SITE_TITLE Admin || Edit Page";
+		$page 			=	$this->dropspayouts_model->getPage($id);
+		//$data['enduser'] = $this->enduser_model->getallProduct(); 
+		
+		if($page) {
+			
+			$data['page']	=	$page;
+			$this->layout('enduser/edit_drops',$data);
+				
+		} else {
+			redirect("admin/enduser");
+		}
+	}
+	
+	
+	
+	public function edit_payouts($id) {
+		$SITE_TITLE = SITE_TITLE;
+		$data['title'] = "$SITE_TITLE Admin || Edit Page";
+		$page 			=	$this->dropspayouts_model->getPage($id);
+		//$data['enduser'] = $this->enduser_model->getallProduct(); 
+		
+		if($page) {
+			
+			$data['page']	=	$page;
+			$this->layout('enduser/edit_payouts',$data);
+				
+		} else {
+			redirect("admin/enduser");
+		}
+	}
+	
+	
+	
 	/*
 	** Edit Gasoline Received
 	*/
@@ -601,6 +915,11 @@ class Enduser extends Admin_Controller {
 			redirect("admin/enduser");
 		}
 	}
+	
+	
+	
+	
+	
 		
 	/*
 	** Delete page  
@@ -643,6 +962,28 @@ class Enduser extends Admin_Controller {
 		}		
 
 	}
+	
+	    public function ConfirmDailyPassword() 
+	    { 
+	        $userpass = $this->daily_shift_model->getUserPassword();
+	        $user_password =$userpass['password'];
+			
+			$password = md5($this->input->post('password'));
+			//die($password);
+			if($user_password == $password)
+			{
+				die('ok');
+				//return 'ok';
+				
+			}
+			 else{
+				 
+				die('password not match');
+			 }
+          
+			
+           // die('errrr');
+         }
 
 	
 	

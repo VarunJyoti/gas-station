@@ -2,11 +2,13 @@
 class Dropspayouts_model extends CI_Model{
 	protected $_table_name = 'drops_payout';
 	protected $_order_by = 'id';
-	protected static $db_fields = array('id', 'amount',	'name',	'created_date',	'modified_date', 'shift', 'type','user_id','c_id','daily_no');
+	protected static $db_fields = array('id', 'amount',	'name', 'p_image', 'p_desc','created_date',	'modified_date', 'shift', 'type','user_id','c_id','daily_no');
 	
 	public $id;
 	public $amount; 
 	public $name; 
+	public $p_image; 
+	public $p_desc; 
 	public $created_date; 
 	public $modified_date; 
 	public $shift; 
@@ -31,6 +33,66 @@ class Dropspayouts_model extends CI_Model{
 		
 		
 		$data 	= $this->array_from_post(self::$db_fields);	
+		
+		// image upload codes starts here
+		
+		
+		$data['p_desc'] 	=	$this->input->post("_p_desc");
+        
+		//upload image ends
+		
+		$config = array(
+            'upload_path'   => FCPATH.'uploads/product',
+            'allowed_types' => 'gif|jpg|png',
+            'quality'      => '10%',
+            'max_size'      => '10000',
+            'max_width'     => '10240',
+            'max_height'    => '7680',
+            'encrypt_name'  => true,
+        );
+	
+		//print_r($config);die('--test');
+				
+        $this->load->library('upload', $config);
+		if($_FILES['p_image']['name']){
+			$upload = $this->upload->do_upload("p_image");
+			
+			if($upload === FALSE) {
+				$error = array('error' => $this->upload->display_errors());
+				return $error['error'];	
+			}else {
+				$upload_data = $this->upload->data();
+				$data_ary = array(
+					'title'     => $upload_data['client_name'],
+					'file'      => $upload_data['file_name'],
+					'width'     => $upload_data['image_width'],
+					'height'    => $upload_data['image_height'],
+					'type'      => $upload_data['image_type'],
+					'size'      => $upload_data['file_size'],
+					'date'      => time(),
+				);
+				if($this->input->post('h_image')){
+					$old_path	=	$config['upload_path'].'/'.$this->input->post('h_image');
+					unlink($old_path);
+				}
+				$data['p_image']	=	$upload_data['file_name'];
+				 $configer = array(
+                            'image_library' => 'gd2',
+                            'source_image' => $upload_data['full_path'],
+                            'create_thumb' => FALSE,//tell the CI do not create thumbnail on image
+                            'maintain_ratio' => TRUE,
+                            'quality' => '40%', //tell CI to reduce the image quality and affect the image size
+                            'width' => 200,//new size of image
+                            'height' => 200,//new size of image
+                        );
+                    $this->image_lib->clear();
+                    $this->image_lib->initialize($configer);
+                    $this->image_lib->resize();
+			}
+        }
+		
+		
+		// image upload codes ends here
 		
 		
 		
@@ -74,20 +136,20 @@ class Dropspayouts_model extends CI_Model{
 			$name = $this->input->post("name");
             $amount = $this->input->post("amount");
             $type = $this->input->post("type");
-			$i = 0;
-    foreach($name as $row){
-        $data['amount'] = $amount[$i];
-        $data['name'] = $name[$i];
+            $p_image = $this->input->post("p_image");
+            $p_desc = $this->input->post("P_desc");
+			
+    
 		$data['created_date']  = date("Y-m-d H:i:s", time());
 		$data['modified_date']  ="0000-00-00 00:00:00";
-        $data['type'] = $type[$i];
+       // $data['type'] = $type;
 		$data['shift'] = $shift_id;
 		$data['user_id'] = $user_id;
 		$data['c_id'] = $cid1;
 		$data['daily_no'] = $daily_no;
         $this->db->insert($table,$data);
-        $i++;
-    }
+        
+    
 		//print_r($type);
 	
 		

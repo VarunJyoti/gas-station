@@ -1,4 +1,6 @@
-<?php    
+<?php 
+ $userid = unserialize($this->session->userdata('admin'));
+ $user_id = $userid['id'];   
 $statusss = $this->admin_login_model->CheckEnduser();
 $status = $statusss->status;
 if ($status != 'close')
@@ -71,13 +73,13 @@ html, body {
                 <div class="form-inline">
                     <div class="form-group" style="padding: 0 20px 0 20px;">
                         <label class="sr-only" for="field-name">Name</label>
-                        <input type="text" required="required" class="form-control" id="name[]" name="name[]" value="" placeholder="Name">
+                        <input type="text"  required="required" class="form-control" id="name[]" name="name[]" value="<?php echo $user_id;?>" placeholder="Name">
                     </div>
 					
                     
                     <div class="form-group" style="padding: 0 20px 0 20px;">
                         <label class="sr-only" for="field-value">Amount</label>
-                        <input type="text" required="required" class="form-control" id="amount[]" name="amount[]" value="" placeholder="Amount">
+                        <input type="number"  required="required" class="form-control" id="amount[]" name="amount[]" value="" placeholder="Amount">
                     </div>
 					 
 					 <div class="form-group" style="padding: 0 20px 0 20px;">

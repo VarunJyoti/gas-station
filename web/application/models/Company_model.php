@@ -174,12 +174,65 @@ class Company_model extends MY_Model{
 		}
 	}
 
-	public function deletePage($id)
+	public function deletePage($email)
 	{
-		$result = $this->delete($id);
+	    $row =$this->getCID($email);
+		$c_id = $row[c_id];
+		$id = $row[id];
+		$page = $this->CheckDailyEnry($c_id);
+		if(empty($page))
+		{
+			
+		$result = $this->db->where('email', $email)->delete('cd_company');
+		$this->db->where('email', $email)->delete('cd_admins');
 		return $result;
+		}
+		
+		else if(!empty($page))
+		{    
+	         // print_r($id); die('not empty');
+			
+			$table1= 'cd_admins';
+			
+			$data1 = array('status'=> '0');
+			$this->db->where('c_id', $c_id);
+			$result = $this->db->update($table1, $data1);
+			
+			$table2= 'cd_company';
+			$data2 = array('status'=> '0');
+			$this->db->where('id', $c_id);
+			$result1 = $this->db->update($table2, $data2);
+			return $result1;
+		}
+		
 
 	}
+	
+	public function getCID($email)
+	{
+	
+		   $this->db->where("email",$email);
+			
+            $query = $this->db->get('admins');
+            $page1 = $query->row_array();
+            return $page1;
+
+	}
+	
+	
+	public function CheckDailyEnry($c_id)
+	{
+	
+		$this->db->select('*');
+        $this->db->from('daily_entry');
+       // $this->db->where("c_id",$c_id);
+		$this->db->where("c_id", $c_id);
+		//$this->db->order_by('login_time','DESC');
+		$page = $this->db->get();
+		$page1 = $page->row_array();
+        return $page1;
+	}
+	
 
 	public function getallProduct() 
 	{
@@ -324,7 +377,7 @@ class Company_model extends MY_Model{
 		/*
 		Gasoline view page starts
 		*/
-	public function getGasolineRecordByShift($date,$shift) 
+	public function getGasolineRecordByShift($daily_no,$shift) 
 	{  
 	     $cid = $this->gasolinereceived_model->getCompanyId();
 		 $cid1 = $cid['0']->c_id;
@@ -335,7 +388,7 @@ class Company_model extends MY_Model{
 		 
 		// $this->db->where('date	',$date);
 		 $this->db->where('c_id	',$cid1);
-		 $this->db->LIKE('date', $date);
+		 $this->db->where('daily_no', $daily_no);
 		 $this->db->order_by('date','DESC');
 		 $query = $this->db->get('daily_entry')->result();
 		 $query1=$this->db->last_query($query);
@@ -365,6 +418,27 @@ class Company_model extends MY_Model{
 	   return $query;
 	   
 	}
+	
+	
+	public function getDaily_no() 
+	
+	{
+	    $cid = $this->gasolinereceived_model->getCompanyId();
+		 $cid1 = $cid['0']->c_id;
+          
+	  
+	 	  $this->db->distinct();
+
+          $this->db->select('daily_no');
+ 
+		 $this->db->where('c_id	',$cid1);
+		 $this->db->order_by('date','DESC');
+		 $query = $this->db->get('daily_entry')->result();
+		
+	   return $query;
+	   
+	}
+	
 	
 	
 	public function getShiftDate() 

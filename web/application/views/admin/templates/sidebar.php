@@ -310,9 +310,15 @@ if ($status != 'close')
 				<ul class="sub-menu">
 
 			   <li>							
-				<a href="<?php echo base_url('/admin/enduser/form');?>">							
+				<a href="<?php echo base_url('/admin/enduser/drops');?>">							
 											
-				Drops & Payouts Entry</a>						
+				Drops Entry</a>						
+				</li>
+				
+				<li>							
+				<a href="<?php echo base_url('/admin/enduser/payouts');?>">							
+											
+				Payouts Entry</a>						
 				</li>
 				
 			    <li>							
@@ -332,7 +338,14 @@ if ($status != 'close')
 											
 				View Last 3 records</a>						
 				</li>
-		
+				
+			
+				 <li>							
+				<a href="<?php echo base_url('/admin/enduser/pricechange');?>">							
+											
+				Change Price</a>						
+				</li>
+		      
 				</ul>				
 				</li>	
 <?php 

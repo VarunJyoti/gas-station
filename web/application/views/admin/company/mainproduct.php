@@ -43,6 +43,7 @@
 				<th>Sr.</th>
 				<th data-class="Title">Product Name</th>
 				
+				<th data-hide="Heading,tablet">Old Price</th>
 				<th data-hide="Heading,tablet">Price</th>
 				
 			
@@ -76,12 +77,16 @@
 						if($s_price==''){
 							$s_price='00.00';
 						}
+						$old_price= $this->product_model->getProductPriceByID($page->id)->old_price;
+						if($old_price==''){
+							$old_price='00.00';
+						}
 						$strtotime = $comp->createtime;
 						$date = date('d M Y',$strtotime);
 						echo ' <tr class="gradeX">';
 						echo " <td>{$s_no}</td>";
 						echo " <td>{$page->p_name}</td>";
-						
+						echo " <td>{$old_price}</td>";
 						echo " <td>{$s_price}</td>";
 						
 						

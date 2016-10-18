@@ -1,6 +1,7 @@
 <?php    
 $statusss = $this->admin_login_model->CheckEnduser();
 $status = $statusss->status;
+
 if ($status != 'close')
 {
 ?>
@@ -29,7 +30,14 @@ html, body {
 {
 width:30%;	
 }
+
+
+   .tdwidth
+   {width:20%;
+   }
+
 </style>
+
 <!-- BEGIN CONTENT -->
 <div class="page-content-wrapper">
 	<div class="page-content">	
@@ -67,7 +75,7 @@ width:30%;
 		
 	<h5 class="text-uppercase strong separator bottom margin-none"></h5>
 	
-<form class="form-horizontal" action="<?php echo base_url('admin/enduser/savegasoline');?>" id="edit_page" method="post" autocomplete="off">
+<form class="form-horizontal" action="<?php echo base_url('admin/enduser/savegasoline');?>" id="edit_page"  method="post" autocomplete="off">
 	<div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -76,26 +84,25 @@ width:30%;
                  
 				 <div class="form-group" style="padding: 0 20px 0 20px;">
                         <label class="sr-only" for="field-value">Date</label>
-                        <input type="date" class="form-control" id="date[]" name="date[]" required="required" value="<?php echo date('Y-m-d');?>" placeholder="Date">
+                        <input type="text" readonly required="required" class="form-control" id="datepicker" name="date[]" max=""  required="required" value="<?php echo date('Y-m-d');?>" placeholder="Date">
 						
                     </div>
 					<div class="form-group" style="padding: 0 20px 0 20px;">
                         <label class="sr-only" for="field-value">Bol Number</label>
-                        <input type="text" class="form-control" id="bol_no[]" name="bol_no[]" required="required" value="" placeholder="BOL Number">
+                        <input type="text" class="form-control"   id="bol_no[]" name="bol_no[]" required="required" value="" placeholder="BOL Number">
 						
                     </div>
                     
                     <div class="form-group" style="padding: 0 20px 0 20px;">
                         <label class="sr-only" for="field-value">Amount</label>
-                        <input type="number" class="form-control" id="received[]" name="received[]" required="required" value="" placeholder="Received amount in gallons">
+                        <input type="number" class="form-control"  max="9999" id="received[]" name="received[]" required="required" value="" placeholder="Quantity">
 						
                     </div>
 					
-					<div class="form-group" style="padding: 0 20px 0 20px;">
-                        <label class="sr-only" for="received_price">Received Price</label>
-                        <input type="number" class="form-control" id="received_price[]" name="received_price[]" required="required" value="" placeholder="Received Price">
+					
+                        <input type="hidden" class="form-control" id="received_price[]" name="received_price[]" required="required" value="00.00" placeholder="Received Price">
 						
-                    </div>
+                 
 					 
 					 <div class="form-group" style="padding: 0 20px 0 20px;">
                         <label class="sr-only" for="field-value">Drops Type</label>
@@ -117,12 +124,20 @@ width:30%;
                    -->
 				   </div>
 				   
+				   
+				    <div class="form-group" style="padding: 0 20px 0 20px;">
+                        <label class="sr-only" for="field-value">Image</label>
+                        <input class="form-control" id="p_image[]" name="p_image[]" type="file" value='<?php echo set_value('p_image');?>'/>
+						
+                    </div>
+				   <!--
                     <button class="btn btn-danger" data-role="remove">
                         <span class="glyphicon glyphicon-remove"></span>
                     </button>
                     <button class="btn btn-primary" data-role="add">
                         <span class="glyphicon glyphicon-plus"></span>
                     </button>
+					-->
                 </div>  <!-- /div.form-inline -->
             </div>  <!-- /div[data-role="dynamic-fields"] -->
         </div>  <!-- /div.col-md-12 -->
@@ -134,7 +149,7 @@ width:30%;
 	
 	<div>&nbsp;</div>
 	<div <div style="overflow-x:auto;">
-	<form class="form-horizontal" action="<?php echo base_url('admin/enduser/savedaily_shift');?>" id="add_page" method="post" autocomplete="off">
+	<form class="form-horizontal" action="<?php echo base_url('admin/enduser/savedaily_shift');?>" id="add_page" name="add_page" method="post" autocomplete="off">
 	<table class="footable table table-striped table-bordered table-white table-primary" width="100%"> 
 <tr>
 	<td>
@@ -153,6 +168,7 @@ width:30%;
 	<?php 
 	$store_sales  =	$this->store_sales_model->getTotalStoreSales()->total_store_sales;
 	$store_sale  =  number_format(round((float)$store_sales,2),2);
+	//$total_store_sale=$this->daily_shift_model->getSumStoreSales->store_total;
 	$Credit_cards_totals = $this->daily_shift_model->getGasolineRecords()->credit_cards;
 	
 	$Credit_cards_total  =  number_format(round((float)$Credit_cards_totals,2),2);
@@ -168,11 +184,11 @@ width:30%;
  
   foreach ($pid1 as $product)
  {
-	 $data['data'] 	=	$this->daily_shift_model->getLastEntryRecord($product)->balance;
-	 $opens= $data['data'];
+	 $opens = $this->daily_shift_model->getLastEntryRecord($product)->balance;
+	// $opens= $data['data'];
 	 $open = number_format(round((float)$opens,2),2);
 	 $receiveds=$this->daily_shift_model->getSumGasolineReceived($product)->received_total;
-	 $received= number_format(round((float)$receiveds,2),2);
+	
      $totals=($opens+$receiveds);
      $total= number_format(round((float)$totals,2),2);	
      
@@ -217,20 +233,22 @@ width:30%;
 		if($get_gallons_value){
 			$total_gallons_solds += $get_gallons_value; 
 		}
+		
+		
 	?>
 	<td>
 	<table>
-	<tr><td><u><?php echo $this->gasolinereceived_model->getProductName($product); ?></u></td></tr>
+	<tr><td><u><span style="color:black;"><b><?php echo $this->gasolinereceived_model->getProductName($product); ?></b></span></u></td></tr>
 	 
-	<tr><td><input  type="hidden"  name="pid[<?php echo $product ?>]"  value="<?php echo $product ?>">
-	<input    readonly   name="open[<?php echo $product ?>]"  value="<?php echo $opens; ?>"></td></tr>
-	<tr><td><input readonly type="number" step="0.01"  name="received[<?php echo $product ?>]"  value="<?php echo $receiveds;?>" placeholder="<?php echo $received;?>"></td></tr>
-	<tr><td><input  type="text" readonly  name="total[<?php echo $product ?>]"   value="<?php echo $totals;?>"></td></tr>
-	<tr><td><input  type="number" step="0.01" min="0" max="<?php echo $totals;?>"   name="sale[<?php echo $product ?>]"  value="<?php echo $sales;?>" placeholder="<?php echo $sale;?>"></td></tr>
-	<tr><td><input  type="text" readonly  name="balance[<?php echo $product ?>]"  value="<?php echo $balances;?>"></td></tr>
+	<tr><td><input style="width:90%;"  type="hidden"  name="pid[<?php echo $product ?>]"  value="<?php echo $product ?>">
+	<input style="width:90%;"  readonly   name="open[<?php echo $product ?>]"  value="<?php echo $this->daily_shift_model->getGasolineBalance($product)->open; ?>" placeholder="<?php echo $opens;?>"></td></tr>
+	<tr><td><input style="width:90%;" readonly type="number" step="0.01"  name="received[<?php echo $product ?>]"  value="<?php echo $receiveds;?>" placeholder="<?php echo $received;?>"></td></tr>
+	<tr><td><input style="width:90%;"  type="text" readonly  name="total[<?php echo $product ?>]"   value="<?php echo $this->daily_shift_model->getGasolineBalance($product)->total;?>"></td></tr>
+	<tr><td><input style="width:90%;"  type="number" step="0.01" min="0" max="<?php echo $totals;?>"   name="sale[<?php echo $product ?>]"  value="<?php echo $this->daily_shift_model->getGasolineBalance($product)->sale;?>" placeholder="<?php echo $sale;?>"></td></tr>
+	<tr><td><input style="width:90%;"  type="text" readonly  name="balance[<?php echo $product ?>]"  value="<?php echo $this->daily_shift_model->getGasolineBalance($product)->balance;?>"></td></tr>
 	<?php if($product!=64){   ?>
-	<tr><td><input  type="number" step="0.01"  name="vroot[<?php echo $product ?>]"  value="<?php echo $vroots;?>" placeholder="<?php echo $vroot;?>"></td></tr>
-	<tr><td><input  type="text" readonly  name="diff[<?php echo $product ?>]"  value="<?php echo $diff;?>"></td></tr>
+	<tr><td><input style="width:90%;"    type="number" step="0.01"  name="vroot[<?php echo $product ?>]"  value="<?php echo $this->daily_shift_model->getGasolineBalance($product)->vroot;?>" placeholder="<?php echo $vroot;?>"></td></tr>
+	<tr><td><input style="width:90%;"  type="text" readonly  name="diff[<?php echo $product ?>]"  value="<?php echo $this->daily_shift_model->getGasolineBalance($product)->diff;?>"></td></tr>
 	<?php } ?>
 	</table>
 	</td>
@@ -243,55 +261,61 @@ width:30%;
 	<tr><td><input readonly  type="text"   value="GAS SALES"></td></tr>
 	<tr><td><input readonly  type="text"   value="STORE SALES"></td></tr>
 	<tr><td><input readonly  type="text"   value="PROPANE SALES"></td></tr>
-	<tr><td><input readonly  type="text"   value="AMOUNT REQUIRED"></td></tr>
+	<tr><td><input style="font-weight:bold; width:100%;" readonly  type="text"   value="AMOUNT REQUIRED"></td></tr>
+	<tr><td><input  readonly  type="text"   value="DROPS TOTAL"></td></tr>
 	<tr><td><input readonly  type="text"   value="CREDIT CARDS"></td></tr>
-	<tr><td><input readonly  type="text"   value="DROPS TOTAL"></td></tr>
-	<tr><td><input readonly  type="text"   value="PAY-OUTS"></td></tr>
-	<tr><td><input readonly  type="text"   value="AMOUNT AVAILABLE"></td></tr>
+	
+	<tr><td><input  readonly  type="text"   value="PAY-OUTS"></td></tr>
+	<tr><td><input style="font-weight:bold; width:100%;" readonly  type="text"   value="AMOUNT AVAILABLE"></td></tr>
 	
 	</table>
 	</td>
 	
 	<td>
 	<table>
-	<tr><td><input  type="text" readonly name="gas_sales"  value="<?php echo $gas_sale;?>"></td></td></tr>
-	<tr><td><input  type="text" readonly name="store_sales"  value="<?php echo $store_sales;?>"></td></tr>
-	<tr><td><input  type="text" readonly name="propane_sales"  value="<?php echo $propane_sales;?>"></td></tr>
-	<tr><td><input  type="text" readonly name="amount_required"  value="<?php echo $amount_required;?>"></td></tr>
-	<tr><td><input  type="text" name="credit_cards"  value="<?php echo $Credit_cards_totals;?>"></td></tr>
-	<tr><td><input  type="text" readonly name="drops_total"  value="<?php echo $Drops_totals;?>"></td></tr>
-	<tr><td><input  type="text" readonly name="payouts"  value="<?php echo $Payouts_totals;?>"></td></tr>
-	<tr><td><input  type="text" readonly name="amount_available"  value="<?php echo $Amount_availables;?>"></td></tr>
+	<tr><td><input style="width:80%;"  type="text" readonly name="gas_sales"  value="<?php echo $this->daily_shift_model->getGasolineRecords()->gas_sales;?>"></td></td></tr>
+	<tr><td><input style="width:80%;"  type="text" readonly name="store_sales"  value="<?php echo $store_sales;?>" placeholder="<?php echo $store_sales;?>"></td></tr>
+	<tr><td><input style="width:80%;"  type="text" readonly name="propane_sales"  value="<?php echo $this->daily_shift_model->getGasolineRecords()->propane_sales;?>"></td></tr>
+	<tr><td><input style="width:80%;"  type="text" readonly name="amount_required"  value="<?php echo $amount_required;?>"></td></tr>
+	<tr><td><input style="width:80%;"  type="text" readonly name="drops_total"  value="<?php echo $Drops_totals;?>"></td></tr>
+	<tr><td><input style="width:80%;"  type="text" name="credit_cards"  value="<?php echo $Credit_cards_totals;?>"></td></tr>
+	
+	<tr><td><input style="width:80%;"  type="text" readonly name="payouts"  value="<?php echo $Payouts_totals;?>"></td></tr>
+	<tr><td><input style="width:80%;"  type="text" readonly name="amount_available"  value="<?php echo $Amount_availables;?>"></td></tr>
 	
 	</table>
 	</td>
 	
 	</tr>
-	<tr><td>TOTAL GALLONS SOLD:</td><td colspan="<?php echo $rcount; ?>"><input  type="text" readonly name="total_gallons_sold"  value="<?php 
+	<tr><td><span style="color:green;">TOTAL GALLONS SOLD:</span></td><td colspan="<?php echo $rcount; ?>"><input  type="text" readonly name="total_gallons_sold"  value="<?php 
 			$total_gallons_sold = number_format(round((float)$total_gallons_solds,2),2);	
-			echo $total_gallons_sold; ?>"></td><td>OVERSHORT</td><td><input  type="text" readonly name="overshort"  value="<?php echo $overshort;?>"></td></tr>
-	<tr><td colspan="<?php echo $rcount1; ?>"><center><button type="submit" name='save_page' value='Save' class="btn green btn-primary glyphicons circle_ok"><i></i>Save</button></center></td><td colspan="2"><center></center></td></tr>
+			echo $total_gallons_sold; ?>"></td><td><b><span style="color:green;">OVER</span><span style="color:red;">SHORT</span></b></td><td><input  type="text" readonly name="overshort"  value="<?php echo $this->daily_shift_model->getGasolineRecords()->overshort;?>"></td></tr>
+	<tr><td colspan="<?php echo $rcount1; ?>"><center><button type="submit" name='save_page' value='Save' class="btn green btn-primary glyphicons circle_ok"><i></i>Save Entry</button></center></td><td colspan="2"><center></center></td></tr>
  <?php  foreach ($RowId as $row)
 	  {  ?>
 		<input type="hidden" name="id[]" value="<?php echo $row->id;?>">
 	  <?php }?>
-	</table>
-	</form>
-	<table width="100%">
-	<tr>
-	<td><form class="form-horizontal" action="<?php echo base_url('admin/enduser/closedaily_shift');?>" id="add_page" method="post" autocomplete="off">
-	<center><button type="submit" name='close_page' value='Save' class="btn green btn-primary glyphicons circle_ok" onClick="return doconfirms();"><i></i>Save Final data</button></center>
-	</form></td>
+	  <br/>
+	  <table width="100%">
+	  <tr>
+	<td>
+	<center><button type="submit" id="close_shift" name='close_shift' value='Save' class="btn green btn-primary glyphicons circle_ok" onClick="return popupWindow();"><i></i>Close Shift</button></center>
+	</td>
 	<td> 
 	
+	<input type="hidden" name="val" id="val1" value="">
 	
-	<form class="form-horizontal" action="<?php echo base_url('admin/enduser/closedaily');?>" id="add_page" method="post" autocomplete="off">
-<center><button type="submit" name='close_page' value='Save' class="btn green btn-primary glyphicons circle_ok" onClick="return doconfirm();"><i></i>Close Daily</button></center>
-	</form>
+<center><button type="submit" id="close_daily" name='close_daily' value='Save' class="btn green btn-primary glyphicons circle_ok" onClick="return popupsWindow();"><i></i>Close Daily</button></center>
+	
 	</td>
-	<tr>
+	</tr>
+	  </table>
+	  <br/>
 	</table>
-	<br/>
+	</form>
+	
+	
+	
 
 	<!-- // Table END -->
 	</div>
@@ -303,7 +327,15 @@ width:30%;
 	<?php
 }
 	?>
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+      <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+      <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	
+	
 <script type="text/javascript">
+/*
 $(function() {
     // Remove button click
     $(document).on(
@@ -330,7 +362,7 @@ $(function() {
     );
 });
 
-
+*/ 
 
 	function page_delete(id){
 			var r = confirm("Are you sure you want to delete the record?");
@@ -362,6 +394,24 @@ function doconfirms()
     }
 }
 
-		
-		
-</script>	
+function popupsWindow(){
+
+window.open('<?php echo base_url("admin/enduser/enter_password");?>','popUpWindow','height=400,width=500,left=300,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes');
+return false;
+};
+
+  
+function popupWindow(){
+
+window.open('<?php echo base_url("admin/enduser/confirm_password");?>','popUpWindow','height=400,width=500,left=300,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes');
+return false;
+};
+
+$(function() {
+    $( "#datepicker" ).datepicker({ minDate: -3, maxDate: "0" ,dateFormat: 'yy-mm-dd'});
+	
+  });
+  
+  
+
+</script>

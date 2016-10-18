@@ -105,7 +105,7 @@
 						
 						?>
 						<td class="center"><a class='btn btn-primary btn-mini' href='<?php echo  base_url("admin/company/edit/{$comp->id}");?>'><i class='icon-edit icon-white'></i> Edit </a>
-						<button onclick='page_delete("<?php echo $comp->id;?>")' class='btn btn-primary btn-mini'><i class='icon-trash icon-white'></i> Delete</button>
+						<button onclick='page_delete("<?php echo $comp->email;?>")' class='btn btn-primary btn-mini'><i class='icon-trash icon-white'></i> Delete</button>
 						</td>
 					<?php
 						$s_no++;
@@ -130,10 +130,10 @@
 </div>
 </div>
 	<script>
-	function page_delete(id){
+	function page_delete(email){
 			var r = confirm("Are you sure you want to delete the record?");
 			if (r == true) {
-			location.href = '<?php echo base_url("admin/company/delete");?>/'+id;
+			location.href = '<?php echo base_url("admin/company/delete");?>/'+email;
 			} else {
 				return false;
 			}
