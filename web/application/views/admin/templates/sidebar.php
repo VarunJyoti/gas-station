@@ -2,7 +2,7 @@
 <?php 
 
 $usr_type = loginUser();
-
+    
 
  ?>
 	<!-- BEGIN SIDEBAR -->

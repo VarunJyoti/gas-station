@@ -4,6 +4,7 @@ $status = $statusss->status;
 
 if ($status != 'close')
 {
+	$checkNewprice = $this->daily_shift_model->getNewPrice();
 ?>
 
 <style>
@@ -158,6 +159,14 @@ width:30%;
 	<tr><td><input readonly  type="text"   value="OPEN"></td></tr>
 	<tr><td><input readonly  type="text"   value="RECEIVED"></td></tr>
 	<tr><td><input readonly  type="text"   value="TOTAL"></td></tr>
+	<?php
+	if(!empty($checkNewprice))
+	{
+	?>
+	<tr><td><input readonly  type="text"   value="OLD SALE"></td></tr>
+	<?php
+	}
+	?>
 	<tr><td><input readonly  type="text"   value="SALE"></td></tr>
 	<tr><td><input readonly  type="text"   value="BALANCE"></td></tr>
 	<tr><td><input readonly  type="text"   value="VEEDER ROOT"></td></tr>
@@ -168,9 +177,17 @@ width:30%;
 	<?php 
 	$store_sales  =	$this->store_sales_model->getTotalStoreSales()->total_store_sales;
 	$store_sale  =  number_format(round((float)$store_sales,2),2);
+	$old_gas_sales = $this->daily_shift_model->getGasolineRecords()->old_gas_sales;
+	$gas_sales = $this->daily_shift_model->getGasolineRecords()->gas_sales;
+	$total_gas_sales = ($gas_sales+$old_gas_sales);
+	
+	$old_propane_sales = $this->daily_shift_model->getGasolineRecords()->old_propane_sales;
+	$propane_sales = $this->daily_shift_model->getGasolineRecords()->propane_sales;
+	$total_propane_sales = ($propane_sales+$old_propane_sales);
+	
 	//$total_store_sale=$this->daily_shift_model->getSumStoreSales->store_total;
 	$Credit_cards_totals = $this->daily_shift_model->getGasolineRecords()->credit_cards;
-	
+	$old_total_gallons_sold = $this->daily_shift_model->getGasolineRecords()->old_total_gallons_sold;
 	$Credit_cards_total  =  number_format(round((float)$Credit_cards_totals,2),2);
 	$Drops_totals = $this->daily_shift_model->getSumDropsReceived()->Drops_total;
 	$Drops_total  =  number_format(round((float)$Drops_totals,2),2);
@@ -233,7 +250,7 @@ width:30%;
 		if($get_gallons_value){
 			$total_gallons_solds += $get_gallons_value; 
 		}
-		
+		$total_gallons = ($total_gallons_solds+$old_total_gallons_sold);
 		
 	?>
 	<td>
@@ -244,6 +261,14 @@ width:30%;
 	<input style="width:90%;"  readonly   name="open[<?php echo $product ?>]"  value="<?php echo $this->daily_shift_model->getGasolineBalance($product)->open; ?>" placeholder="<?php echo $opens;?>"></td></tr>
 	<tr><td><input style="width:90%;" readonly type="number" step="0.01"  name="received[<?php echo $product ?>]"  value="<?php echo $receiveds;?>" placeholder="<?php echo $received;?>"></td></tr>
 	<tr><td><input style="width:90%;"  type="text" readonly  name="total[<?php echo $product ?>]"   value="<?php echo $this->daily_shift_model->getGasolineBalance($product)->total;?>"></td></tr>
+	<?php
+	if(!empty($checkNewprice))
+	{
+	?>
+	<tr><td><input style="width:90%;"  type="number" step="0.01" min="0" max="<?php echo $totals;?>"   name="old_sale[<?php echo $product ?>]"  value="<?php echo $this->daily_shift_model->getGasolineBalance($product)->old_sale;?>" placeholder="<?php echo $sale;?>"></td></tr>
+	<?php
+	}
+	?>
 	<tr><td><input style="width:90%;"  type="number" step="0.01" min="0" max="<?php echo $totals;?>"   name="sale[<?php echo $product ?>]"  value="<?php echo $this->daily_shift_model->getGasolineBalance($product)->sale;?>" placeholder="<?php echo $sale;?>"></td></tr>
 	<tr><td><input style="width:90%;"  type="text" readonly  name="balance[<?php echo $product ?>]"  value="<?php echo $this->daily_shift_model->getGasolineBalance($product)->balance;?>"></td></tr>
 	<?php if($product!=64){   ?>
@@ -258,9 +283,41 @@ width:30%;
 						?>
 	<td>
 	<table>
-	<tr><td><input readonly  type="text"   value="GAS SALES"></td></tr>
+	<?php
+	if(!empty($checkNewprice))
+	{
+	?>
+	<tr><td><input readonly  type="text"   value="OLD GAS SALES"></td></tr>
+	<?php
+	}
+	?>
+	<tr><td><input style="font-weight:bold; width:100%;" readonly  type="text"   value="GAS SALES"></td></tr>
+	<?php
+	if(!empty($checkNewprice))
+	{
+	?>
+	<tr><td><input style="font-weight:bold; width:100%;" readonly  type="text"   value="TOTAL GAS SALES"></td></tr>
+	<?php
+	}
+	?>
 	<tr><td><input readonly  type="text"   value="STORE SALES"></td></tr>
-	<tr><td><input readonly  type="text"   value="PROPANE SALES"></td></tr>
+	<?php
+	if(!empty($checkNewprice))
+	{
+	?>
+	<tr><td><input readonly  type="text"   value="OLD PROPANE SALES"></td></tr>
+	<?php
+	}
+	?>
+	<tr><td><input style="font-weight:bold; width:100%;" readonly  type="text"   value="PROPANE SALES"></td></tr>
+	<?php
+	if(!empty($checkNewprice))
+	{
+	?>
+	<tr><td><input style="font-weight:bold; width:100%;" readonly  type="text"   value="TOTAL PROPANE SALES"></td></tr>
+	<?php
+	}
+	?>
 	<tr><td><input style="font-weight:bold; width:100%;" readonly  type="text"   value="AMOUNT REQUIRED"></td></tr>
 	<tr><td><input  readonly  type="text"   value="DROPS TOTAL"></td></tr>
 	<tr><td><input readonly  type="text"   value="CREDIT CARDS"></td></tr>
@@ -273,10 +330,42 @@ width:30%;
 	
 	<td>
 	<table>
+	<?php
+	if(!empty($checkNewprice))
+	{
+	?>
+	<tr><td><input style="width:80%;"  type="text" readonly name="old_gas_sales"  value="<?php echo $this->daily_shift_model->getGasolineRecords()->old_gas_sales;?>"></td></td></tr>
+	<?php
+	}
+	?>
 	<tr><td><input style="width:80%;"  type="text" readonly name="gas_sales"  value="<?php echo $this->daily_shift_model->getGasolineRecords()->gas_sales;?>"></td></td></tr>
+	<?php
+	if(!empty($checkNewprice))
+	{
+	?>
+	<tr><td><input style="width:80%;"  type="text" readonly name="total_gas_sales"  value="<?php echo $total_gas_sales;?>"></td></td></tr>
+	<?php
+	}
+	?>
 	<tr><td><input style="width:80%;"  type="text" readonly name="store_sales"  value="<?php echo $store_sales;?>" placeholder="<?php echo $store_sales;?>"></td></tr>
+	<?php
+	if(!empty($checkNewprice))
+	{
+	?>
+	<tr><td><input style="width:80%;"  type="text" readonly name="old_propane_sales"  value="<?php echo $this->daily_shift_model->getGasolineRecords()->old_propane_sales;?>"></td></tr>
+	<?php
+	}
+	?>
 	<tr><td><input style="width:80%;"  type="text" readonly name="propane_sales"  value="<?php echo $this->daily_shift_model->getGasolineRecords()->propane_sales;?>"></td></tr>
-	<tr><td><input style="width:80%;"  type="text" readonly name="amount_required"  value="<?php echo $amount_required;?>"></td></tr>
+	<?php
+	if(!empty($checkNewprice))
+	{
+	?>
+	<tr><td><input style="width:80%;"  type="text" readonly name="total_propane_sales"  value="<?php echo $total_propane_sales;?>"></td></tr>
+	<?php
+	}
+	?>
+	<tr><td><input style="width:80%;"  type="text" readonly name="amount_required"  value="<?php echo $this->daily_shift_model->getGasolineRecords()->amount_required;?>"></td></tr>
 	<tr><td><input style="width:80%;"  type="text" readonly name="drops_total"  value="<?php echo $Drops_totals;?>"></td></tr>
 	<tr><td><input style="width:80%;"  type="text" name="credit_cards"  value="<?php echo $Credit_cards_totals;?>"></td></tr>
 	
@@ -287,8 +376,8 @@ width:30%;
 	</td>
 	
 	</tr>
-	<tr><td><span style="color:green;">TOTAL GALLONS SOLD:</span></td><td colspan="<?php echo $rcount; ?>"><input  type="text" readonly name="total_gallons_sold"  value="<?php 
-			$total_gallons_sold = number_format(round((float)$total_gallons_solds,2),2);	
+	<tr><td><span style="color:green;">TOTAL GALLONS SOLD:</span></td><td colspan="<?php echo $rcount; ?>"><input  type="text" style="width:20%;" readonly name="total_gallons_sold"  value="<?php 
+			$total_gallons_sold = number_format(round((float)$total_gallons,2),2);	
 			echo $total_gallons_sold; ?>"></td><td><b><span style="color:green;">OVER</span><span style="color:red;">SHORT</span></b></td><td><input  type="text" readonly name="overshort"  value="<?php echo $this->daily_shift_model->getGasolineRecords()->overshort;?>"></td></tr>
 	<tr><td colspan="<?php echo $rcount1; ?>"><center><button type="submit" name='save_page' value='Save' class="btn green btn-primary glyphicons circle_ok"><i></i>Save Entry</button></center></td><td colspan="2"><center></center></td></tr>
  <?php  foreach ($RowId as $row)

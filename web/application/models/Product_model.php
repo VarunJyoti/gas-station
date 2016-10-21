@@ -259,6 +259,30 @@ class Product_model extends CI_Model{
 		$page = $this->db->get('price')->row_object();
 		return $page;
 	}
+	
+	   public function getProductID() 
+	    {
+	         $company_id = $this->getCompanyId();
+			 $cid =  $company_id['0']->c_id;
+			 $current_date = date('Y-m-d');
+			
+          $this->db->select('*');
+          $this->db->from('price');
+          $this->db->join('product', 'product.id = price.pid');
+		
+		 
+		  $this->db->where('price.c_id', $cid);
+		  $this->db->where('product.p_cat', 'main');
+		
+		  
+            $query = $this->db->get();
+			$q= $this->db->last_query($query);
+			//print_r($q); die('errrr');
+            $page1 = $query->row_array();
+            return $page1;
+
+         }
+	
 
 	 public function deletePage($id)
 	{

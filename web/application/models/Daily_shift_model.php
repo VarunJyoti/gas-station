@@ -2,7 +2,7 @@
 class Daily_shift_model extends CI_Model{
 	protected $_table_name = 'daily_entry';
 	protected $_order_by = 'id';
-	protected static $db_fields = array('id', 'pid', 'user_id', 'daily_shift_id', 'c_id', 'open', 'received', 'total', 'sale', 'balance', 'vroot', 'diff', 'total_gallons_sold', 'gas_sales', 'store_sales', 'propane_sales', 'amount_required', 'credit_cards', 'drops_total', 'payouts', 'amount_available', 'overshort', 'date', 'daily_no');
+	protected static $db_fields = array('id', 'pid', 'user_id', 'daily_shift_id', 'c_id', 'open', 'received', 'total', 'sale', 'old_sale', 'balance', 'vroot', 'diff', 'total_gallons_sold', 'old_total_gallons_sold', 'gas_sales', 'old_gas_sales', 'store_sales', 'propane_sales', 'old_propane_sales', 'amount_required', 'credit_cards', 'drops_total', 'payouts', 'amount_available', 'overshort', 'date', 'daily_no');
 	
 	public $id;
 	public $pid; 
@@ -13,13 +13,17 @@ class Daily_shift_model extends CI_Model{
     public $received;
     public $total;
     public $sale;
+    public $old_sale;
     public $balance;
     public $vroot;
     public $diff;
     public $total_gallons_sold;
+    public $old_total_gallons_sold;
     public $gas_sales;
+    public $old_gas_sales;
     public $store_sales;
     public $propane_sales;
+    public $old_propane_sales;
     public $amount_required;
     public $credit_cards;
     public $drops_total;
@@ -48,12 +52,7 @@ class Daily_shift_model extends CI_Model{
 		
 		$data 	= $this->array_from_post(self::$db_fields);	
 		
-		
-		
-		
-		
-		
-		
+	
 		if($id)
 		{
 			
@@ -65,16 +64,23 @@ class Daily_shift_model extends CI_Model{
 			$daily_no = $shiftdata['daily_no'];
 			$login_time = $shiftdata['login_time'];
 			$price_change_status = $shiftdata['price_change'];
+			$end_pid= $shiftdata['pid'];
 			$logout_time = date("Y-m-d H:i:s", time());
 			$id = $this->input->post("id");
 			$pid = $this->input->post("pid");
-			
+			$checkNewprice = $this->getNewPrice();
 			$open = $this->input->post("open");
-//print_r($open['64'] ); die('jhkjh');
+
 			$received = $this->input->post("received");
 			
 			$total = $this->input->post("total");
-			
+			if(!empty($checkNewprice))
+			{
+				
+				$old_sale = $this->input->post("old_sale");
+				$old_total_gallons_solds = array_sum($old_sale);
+				//die($old_sale);
+			}
 			$sale = $this->input->post("sale");
 			$total_gallons_solds = array_sum($sale);
 			$balance = $this->input->post("balance");
@@ -87,40 +93,44 @@ class Daily_shift_model extends CI_Model{
 			$cid = $this->daily_shift_model->getCompanyId();
 		    $cid1 = $cid['0']->c_id;
 			
+			$TotalGasSales  = $this->TotalGasSales($shift_id,$daily_no,$user_id)->gas_sales;
 			
-			$checkNewprice = $this->getNewPrice();
-		    // print_r($sale);
+			
+			$TotalPropaneSales  = $this->TotalGasSales($shift_id,$daily_no,$user_id)->propane_sales;
+			
+			$old_propane_sales  = $this->TotalGasSales($shift_id,$daily_no,$user_id)->old_propane_sales;
+			
+			$total_gallons_soldss  = $this->TotalGasSales($shift_id,$daily_no,$user_id)->total_gallons_sold;
+			
 		foreach(array_combine($pid,$sale) as $row1=> $sales){
 			$product_price  =	$this->getProductPrice($row1);
 			$product_old_price  = $this->getProductOldPrice($row1);
-			$TotalGasSales  = $this->TotalGasSales($row1,$shift_id,$daily_no,$user_id);
-			$TotalPropaneSales  = $this->TotalPropaneSales($row1,$shift_id,$daily_no,$user_id);
 			
-			if(!empty($checkNewprice) && ($product_old_price != 0) && ($price_change_status == 0))
+			$propane_product_price  =	$this->getProductPrice(64);
+			$propane_product_old_price  =	$this->getProductOldPrice(64);
+			
+		
+			if(!empty($checkNewprice))
 			{
 				
-				   if($row1 != 64)
+			 if($row1 != 64)
 				{
-			  $gas_sales += ($sale[$row1])*($product_price);
+			  $gas_sales += (($sale[$row1])*($product_price));
+			  $old_gas_sales += (($old_sale[$row1])*($product_old_price));
 		
 				}
 				
-				else 
+				else
 		      {
-				  
-			  $propane_sales = ($TotalPropaneSales + ($sale[64])*($product_price));
+			  $propane_sales = (($sale[64])*($propane_product_price));
+			  $old_propane_sales = (($old_sale[64])*($propane_product_old_price));
 		    
 		       }
-			
-			//$qe=$this->db->last_query($last_id);
-				  
-			//print_r($gas_sales);	die('errr');
-				
+	
 			}
-		
 			
-			else{
-				//die('else');
+		else{
+				
 				 if($row1 != 64)
 				{
 			  $gas_sales += (($sale[$row1])*($product_price));
@@ -129,43 +139,53 @@ class Daily_shift_model extends CI_Model{
 				
 				else
 		      {
-			  $propane_sales = (($sale[64])*($product_price));
+			  $propane_sales = (($sale[64])*($propane_product_price));
 		    
 		       }
-				
-			     }
-			
-				
-			}
-			//print_r($propane_sales);	die('errr');
-			
-			if($price_change_status == 0)
-			{
-			$gas_sales = ($gas_sales+$TotalGasSales);
-			
-			$table3 = 'daily_shift';  
-			$data3 = array('price_change'=> '1'); 	
-			$this->db->where('id', $uid);
-			$last_id = $this->db->update($table3 ,$data3);
+                     			   
+		}
 			
 			}
-		
+			
 		$amount_required = ($gas_sales+$propane_sales+$store_sales);
+		if(!empty($checkNewprice))
+	  {
+		$amount_required = ($gas_sales+$old_gas_sales+$propane_sales+$old_propane_sales+$store_sales);
+	   }
 		$amount_available = ($credit_cards+$drops_total+$payouts);
 		$overshort = ($amount_available-$amount_required);
 			
        
-			foreach(array_combine($id,$pid) as $product_id=> $row){
+		foreach(array_combine($id,$pid) as $product_id=> $row){
 
        
 	     $receiveds = $received[$row];
 		 $opens = $open[$row];
+		
 		 $sales = $sale[$row];
 		 $total_sales += $sale[$row];
 	     $totals= ($opens+$receiveds);
 		 $vroots= $vroot[$row];
 		 $product_price  =	$this->getProductPrice($row);
-        // print_r($sales); 
+       
+	if(!empty($checkNewprice))
+	{
+		$old_sales = $old_sale[$row];
+		$data['old_sale'] = $old_sale[$row];
+		$data['old_total_gallons_sold'] = $old_total_gallons_solds;
+		$data['old_gas_sales'] = $old_gas_sales;
+		$data['old_propane_sales'] = $old_propane_sales;
+       if($row==64)
+		 {
+			$balances=($totals+$sales+$old_sales); 
+		 }
+		 else{
+			$balances=($totals-($sales+$old_sales));  
+			 
+		 }			
+			       }
+	else
+	{
 		 if($row==64)
 		 {
 			$balances=($totals+$sales); 
@@ -175,6 +195,8 @@ class Daily_shift_model extends CI_Model{
 			 
 		 }
 		 
+		       } 
+			   
 		 $diffs= ($vroots-$balances);
 		 
 		 
@@ -190,8 +212,11 @@ class Daily_shift_model extends CI_Model{
 		$data['vroot'] = $vroot[$row];
 		$data['diff'] = $diffs;
 		$data['total_gallons_sold'] = $total_gallons_solds;
+		
 		$data['gas_sales'] = $gas_sales;
+		
 		$data['propane_sales'] = $propane_sales;
+		
 		$data['store_sales'] = $store_sales;
 		$data['amount_required'] = $amount_required;
 		$data['credit_cards'] = $credit_cards;
@@ -209,9 +234,6 @@ class Daily_shift_model extends CI_Model{
 			$this->db->where('id', $product_id);
 			
 			$last_id = $this->db->update($table ,$data);
-			
-			$qe=$this->db->last_query($last_id);
-			
 			
 			}
 		
@@ -245,6 +267,7 @@ class Daily_shift_model extends CI_Model{
 			$balance = $this->input->post("balance");
 			$vroot = $this->input->post("vroot");
 			$diff = $this->input->post("diff");
+			$store_sales = $this->input->post("store_sales");
 			$drops = $this->input->post("drops_total");
 			$payouts = $this->input->post("payouts");
 			$credit_cards = $this->input->post("credit_cards");
@@ -254,7 +277,7 @@ class Daily_shift_model extends CI_Model{
 		   
 			$cid = $this->daily_shift_model->getCompanyId();
 		    $cid1 = $cid['0']->c_id;
-			$store_sales  =	$this->store_sales_model->getTotalStoreSales()->total_store_sales;
+			
 			foreach($pid as $row1)
 			{
 				$product_price2  =	$this->getProductPrice($row1);
@@ -287,13 +310,6 @@ class Daily_shift_model extends CI_Model{
 			 
 		 }
 		$diffs= ($vroots-$balances);
-		 
-       
-		
-		
-				
-		
-		//die($propane_sales);
 		
 		
 		$data['received'] = $received[$row];
@@ -343,6 +359,7 @@ class Daily_shift_model extends CI_Model{
 		if($id)
 		{
 			
+		
 			$shiftdata = $this->getUserShiftData();
 			$user_id = $shiftdata['user_id'];
 			$shift_id = $shiftdata['shift'];
@@ -350,16 +367,23 @@ class Daily_shift_model extends CI_Model{
 			$daily_no = $shiftdata['daily_no'];
 			$login_time = $shiftdata['login_time'];
 			$price_change_status = $shiftdata['price_change'];
+			$end_pid= $shiftdata['pid'];
 			$logout_time = date("Y-m-d H:i:s", time());
 			$id = $this->input->post("id");
 			$pid = $this->input->post("pid");
-			
+			$checkNewprice = $this->getNewPrice();
 			$open = $this->input->post("open");
-            //print_r($open['64'] ); die('jhkjh');
+
 			$received = $this->input->post("received");
 			
 			$total = $this->input->post("total");
-			
+			if(!empty($checkNewprice))
+			{
+				
+				$old_sale = $this->input->post("old_sale");
+				$old_total_gallons_solds = array_sum($old_sale);
+				//die($old_sale);
+			}
 			$sale = $this->input->post("sale");
 			$total_gallons_solds = array_sum($sale);
 			$balance = $this->input->post("balance");
@@ -371,35 +395,45 @@ class Daily_shift_model extends CI_Model{
 			$payouts = $this->input->post("payouts");
 			$cid = $this->daily_shift_model->getCompanyId();
 		    $cid1 = $cid['0']->c_id;
-			$checkNewprice = $this->getNewPrice();
-		    // print_r($sale);
+			
+			$TotalGasSales  = $this->TotalGasSales($shift_id,$daily_no,$user_id)->gas_sales;
+			
+			
+			$TotalPropaneSales  = $this->TotalGasSales($shift_id,$daily_no,$user_id)->propane_sales;
+			
+			$old_propane_sales  = $this->TotalGasSales($shift_id,$daily_no,$user_id)->old_propane_sales;
+			
+			$total_gallons_soldss  = $this->TotalGasSales($shift_id,$daily_no,$user_id)->total_gallons_sold;
+			
 		foreach(array_combine($pid,$sale) as $row1=> $sales){
 			$product_price  =	$this->getProductPrice($row1);
 			$product_old_price  = $this->getProductOldPrice($row1);
-			$TotalGasSales  = $this->TotalGasSales($row1,$shift_id,$daily_no,$user_id);
-			$TotalPropaneSales  = $this->TotalPropaneSales($row1,$shift_id,$daily_no,$user_id);
 			
-			if(!empty($checkNewprice) && ($product_old_price != 0) && ($price_change_status == 0))
+			$propane_product_price  =	$this->getProductPrice(64);
+			$propane_product_old_price  =	$this->getProductOldPrice(64);
+			
+		
+			if(!empty($checkNewprice))
 			{
 				
-				   if($row1 != 64)
+			 if($row1 != 64)
 				{
-			  $gas_sales += ($sale[$row1])*($product_price);
+			  $gas_sales += (($sale[$row1])*($product_price));
+			  $old_gas_sales += (($old_sale[$row1])*($product_old_price));
 		
 				}
 				
-				else 
+				else
 		      {
-				  
-			  $propane_sales = ($TotalPropaneSales + ($sale[64])*($product_price));
+			  $propane_sales = (($sale[64])*($propane_product_price));
+			  $old_propane_sales = (($old_sale[64])*($propane_product_old_price));
 		    
 		       }
-
+	
 			}
-		
 			
-			else{
-			
+		else{
+				
 				 if($row1 != 64)
 				{
 			  $gas_sales += (($sale[$row1])*($product_price));
@@ -408,43 +442,53 @@ class Daily_shift_model extends CI_Model{
 				
 				else
 		      {
-			  $propane_sales = (($sale[64])*($product_price));
+			  $propane_sales = (($sale[64])*($propane_product_price));
 		    
 		       }
-				
-			     }
-			
-				
-			}
-			
-			
-			if($price_change_status == 0)
-			{
-			$gas_sales = ($gas_sales+$TotalGasSales);
-			
-			$table3 = 'daily_shift';  
-			$data3 = array('price_change'=> '1'); 	
-			$this->db->where('id', $uid);
-			$last_id = $this->db->update($table3 ,$data3);
+                     			   
+		}
 			
 			}
-		
+			
 		$amount_required = ($gas_sales+$propane_sales+$store_sales);
+		if(!empty($checkNewprice))
+	  {
+		$amount_required = ($gas_sales+$old_gas_sales+$propane_sales+$old_propane_sales+$store_sales);
+	   }
 		$amount_available = ($credit_cards+$drops_total+$payouts);
 		$overshort = ($amount_available-$amount_required);
 			
        
-			foreach(array_combine($id,$pid) as $product_id=> $row){
+		foreach(array_combine($id,$pid) as $product_id=> $row){
 
        
 	     $receiveds = $received[$row];
 		 $opens = $open[$row];
+		
 		 $sales = $sale[$row];
 		 $total_sales += $sale[$row];
 	     $totals= ($opens+$receiveds);
 		 $vroots= $vroot[$row];
 		 $product_price  =	$this->getProductPrice($row);
-        
+       
+	if(!empty($checkNewprice))
+	{
+		$old_sales = $old_sale[$row];
+		$data['old_sale'] = $old_sale[$row];
+		$data['old_total_gallons_sold'] = $old_total_gallons_solds;
+		$data['old_gas_sales'] = $old_gas_sales;
+		$data['old_propane_sales'] = $old_propane_sales;
+       if($row==64)
+		 {
+			$balances=($totals+$sales+$old_sales); 
+		 }
+		 else{
+			$balances=($totals-($sales+$old_sales));  
+			 
+		 }			
+			       }
+	else
+	{
 		 if($row==64)
 		 {
 			$balances=($totals+$sales); 
@@ -454,6 +498,8 @@ class Daily_shift_model extends CI_Model{
 			 
 		 }
 		 
+		       } 
+			   
 		 $diffs= ($vroots-$balances);
 		 
 		 
@@ -469,8 +515,11 @@ class Daily_shift_model extends CI_Model{
 		$data['vroot'] = $vroot[$row];
 		$data['diff'] = $diffs;
 		$data['total_gallons_sold'] = $total_gallons_solds;
+		
 		$data['gas_sales'] = $gas_sales;
+		
 		$data['propane_sales'] = $propane_sales;
+		
 		$data['store_sales'] = $store_sales;
 		$data['amount_required'] = $amount_required;
 		$data['credit_cards'] = $credit_cards;
@@ -488,9 +537,6 @@ class Daily_shift_model extends CI_Model{
 			$this->db->where('id', $product_id);
 			
 			$last_id = $this->db->update($table ,$data);
-			
-			$qe=$this->db->last_query($last_id);
-			
 			
 			}
 			
@@ -534,7 +580,7 @@ class Daily_shift_model extends CI_Model{
 			$received = $this->input->post("received");
 			$total = $this->input->post("total");
 			$sale = $this->input->post("sale");
-			//$total_gallons_solds = array_sum($sale);
+		
 			$balance = $this->input->post("balance");
 			$vroot = $this->input->post("vroot");
 			$diff = $this->input->post("diff");
@@ -601,8 +647,9 @@ class Daily_shift_model extends CI_Model{
 		$data 	= $this->array_from_post(self::$db_fields);	
 	
 		if($id)
-		{
+	{
 			
+		
 			$shiftdata = $this->getUserShiftData();
 			$user_id = $shiftdata['user_id'];
 			$shift_id = $shiftdata['shift'];
@@ -610,16 +657,23 @@ class Daily_shift_model extends CI_Model{
 			$daily_no = $shiftdata['daily_no'];
 			$login_time = $shiftdata['login_time'];
 			$price_change_status = $shiftdata['price_change'];
+			$end_pid= $shiftdata['pid'];
 			$logout_time = date("Y-m-d H:i:s", time());
 			$id = $this->input->post("id");
 			$pid = $this->input->post("pid");
-			
+			$checkNewprice = $this->getNewPrice();
 			$open = $this->input->post("open");
-            //print_r($open['64'] ); die('jhkjh');
+
 			$received = $this->input->post("received");
 			
 			$total = $this->input->post("total");
-			
+			if(!empty($checkNewprice))
+			{
+				
+				$old_sale = $this->input->post("old_sale");
+				$old_total_gallons_solds = array_sum($old_sale);
+				//die($old_sale);
+			}
 			$sale = $this->input->post("sale");
 			$total_gallons_solds = array_sum($sale);
 			$balance = $this->input->post("balance");
@@ -631,35 +685,45 @@ class Daily_shift_model extends CI_Model{
 			$payouts = $this->input->post("payouts");
 			$cid = $this->daily_shift_model->getCompanyId();
 		    $cid1 = $cid['0']->c_id;
-			$checkNewprice = $this->getNewPrice();
-		    // print_r($sale);
+			
+			$TotalGasSales  = $this->TotalGasSales($shift_id,$daily_no,$user_id)->gas_sales;
+			
+			
+			$TotalPropaneSales  = $this->TotalGasSales($shift_id,$daily_no,$user_id)->propane_sales;
+			
+			$old_propane_sales  = $this->TotalGasSales($shift_id,$daily_no,$user_id)->old_propane_sales;
+			
+			$total_gallons_soldss  = $this->TotalGasSales($shift_id,$daily_no,$user_id)->total_gallons_sold;
+			
 		foreach(array_combine($pid,$sale) as $row1=> $sales){
 			$product_price  =	$this->getProductPrice($row1);
 			$product_old_price  = $this->getProductOldPrice($row1);
-			$TotalGasSales  = $this->TotalGasSales($row1,$shift_id,$daily_no,$user_id);
-			$TotalPropaneSales  = $this->TotalPropaneSales($row1,$shift_id,$daily_no,$user_id);
 			
-			if(!empty($checkNewprice) && ($product_old_price != 0) && ($price_change_status == 0))
+			$propane_product_price  =	$this->getProductPrice(64);
+			$propane_product_old_price  =	$this->getProductOldPrice(64);
+			
+		
+			if(!empty($checkNewprice))
 			{
 				
-				   if($row1 != 64)
+			 if($row1 != 64)
 				{
-			  $gas_sales += ($sale[$row1])*($product_price);
+			  $gas_sales += (($sale[$row1])*($product_price));
+			  $old_gas_sales += (($old_sale[$row1])*($product_old_price));
 		
 				}
 				
-				else 
+				else
 		      {
-				  
-			  $propane_sales = ($TotalPropaneSales + ($sale[64])*($product_price));
+			  $propane_sales = (($sale[64])*($propane_product_price));
+			  $old_propane_sales = (($old_sale[64])*($propane_product_old_price));
 		    
 		       }
-
+	
 			}
-		
 			
-			else{
-			
+		else{
+				
 				 if($row1 != 64)
 				{
 			  $gas_sales += (($sale[$row1])*($product_price));
@@ -668,43 +732,53 @@ class Daily_shift_model extends CI_Model{
 				
 				else
 		      {
-			  $propane_sales = (($sale[64])*($product_price));
+			  $propane_sales = (($sale[64])*($propane_product_price));
 		    
 		       }
-				
-			     }
-			
-				
-			}
-			
-			
-			if($price_change_status == 0)
-			{
-			$gas_sales = ($gas_sales+$TotalGasSales);
-			
-			$table3 = 'daily_shift';  
-			$data3 = array('price_change'=> '1'); 	
-			$this->db->where('id', $uid);
-			$last_id = $this->db->update($table3 ,$data3);
+                     			   
+		}
 			
 			}
-		
+			
 		$amount_required = ($gas_sales+$propane_sales+$store_sales);
+		if(!empty($checkNewprice))
+	  {
+		$amount_required = ($gas_sales+$old_gas_sales+$propane_sales+$old_propane_sales+$store_sales);
+	   }
 		$amount_available = ($credit_cards+$drops_total+$payouts);
 		$overshort = ($amount_available-$amount_required);
 			
        
-			foreach(array_combine($id,$pid) as $product_id=> $row){
+		foreach(array_combine($id,$pid) as $product_id=> $row){
 
        
 	     $receiveds = $received[$row];
 		 $opens = $open[$row];
+		
 		 $sales = $sale[$row];
 		 $total_sales += $sale[$row];
 	     $totals= ($opens+$receiveds);
 		 $vroots= $vroot[$row];
 		 $product_price  =	$this->getProductPrice($row);
-        
+       
+	if(!empty($checkNewprice))
+	{
+		$old_sales = $old_sale[$row];
+		$data['old_sale'] = $old_sale[$row];
+		$data['old_total_gallons_sold'] = $old_total_gallons_solds;
+		$data['old_gas_sales'] = $old_gas_sales;
+		$data['old_propane_sales'] = $old_propane_sales;
+       if($row==64)
+		 {
+			$balances=($totals+$sales+$old_sales); 
+		 }
+		 else{
+			$balances=($totals-($sales+$old_sales));  
+			 
+		 }			
+			       }
+	else
+	{
 		 if($row==64)
 		 {
 			$balances=($totals+$sales); 
@@ -714,6 +788,8 @@ class Daily_shift_model extends CI_Model{
 			 
 		 }
 		 
+		       } 
+			   
 		 $diffs= ($vroots-$balances);
 		 
 		 
@@ -729,8 +805,11 @@ class Daily_shift_model extends CI_Model{
 		$data['vroot'] = $vroot[$row];
 		$data['diff'] = $diffs;
 		$data['total_gallons_sold'] = $total_gallons_solds;
+		
 		$data['gas_sales'] = $gas_sales;
+		
 		$data['propane_sales'] = $propane_sales;
+		
 		$data['store_sales'] = $store_sales;
 		$data['amount_required'] = $amount_required;
 		$data['credit_cards'] = $credit_cards;
@@ -749,11 +828,7 @@ class Daily_shift_model extends CI_Model{
 			
 			$last_id = $this->db->update($table ,$data);
 			
-			$qe=$this->db->last_query($last_id);
-			
-			
-			}
-			
+			}			
 			// daily close code starts here
 			$shiftdata = $this->getUserShiftData();
 			$user_id = $shiftdata['user_id'];
@@ -1338,19 +1413,43 @@ class Daily_shift_model extends CI_Model{
 	         
 			$cid = $this->gasolinereceived_model->getCompanyId();
 		    $cid1 = $cid['0']->c_id;
+			$current_date = date('Y-m-d');
 			$this->db->select('old_price');
             $this->db->from('price');
            
 			$this->db->where("pid",$pid);
 			$this->db->where("c_id",$cid1);
+			$this->db->like('date_modified', $current_date );
             $query = $this->db->get();
             $page1 = $query->result();
-			
+			//$q=$this->db->last_query($query);
+			//print_r($q);
             return $page1[0]->old_price;
 
          }
 		 
-		public function TotalGasSales($pid,$shift,$daily_no,$user_id) 
+		public function TotalGasSales($shift,$daily_no,$user_id) 
+	    {
+	         
+			$cid = $this->gasolinereceived_model->getCompanyId();
+		    $cid1 = $cid['0']->c_id;
+			//$this->db->select('gas_sales');
+            //$this->db->from('daily_entry');
+            $this->db->where("c_id",$cid1);
+			//$this->db->where("pid",$pid);
+			$this->db->where("daily_shift_id",$shift);
+			$this->db->where("daily_no",$daily_no);
+			
+			$this->db->where("user_id",$user_id);
+            $query = $this->db->get('daily_entry');
+            $page1 = $query->row_object();
+			
+            return $page1;
+            
+         }
+		 
+	/*	 
+		 public function OldTotalGasSales($shift,$daily_no,$user_id) 
 	    {
 	         
 			$cid = $this->gasolinereceived_model->getCompanyId();
@@ -1358,7 +1457,7 @@ class Daily_shift_model extends CI_Model{
 			$this->db->select('gas_sales');
             $this->db->from('daily_entry');
             $this->db->where("c_id",$cid1);
-			$this->db->where("pid",$pid);
+			//$this->db->where("pid",$pid);
 			$this->db->where("daily_shift_id",$shift);
 			$this->db->where("daily_no",$daily_no);
 			
@@ -1366,20 +1465,20 @@ class Daily_shift_model extends CI_Model{
             $query = $this->db->get();
             $page1 = $query->result();
 			
-            return $page1[0]->gas_sales;
+            return $page1[0]->old_gas_sales;
 
          }
 		 
 		 
-		 public function TotalPropaneSales($pid,$shift,$daily_no,$user_id) 
+		 public function TotalPropaneSales($shift,$daily_no,$user_id) 
 	    {
 	         
 			$cid = $this->gasolinereceived_model->getCompanyId();
 		    $cid1 = $cid['0']->c_id;
-			$this->db->select('propane_sales');
+			$this->db->select('old_propane_sales');
             $this->db->from('daily_entry');
             $this->db->where("c_id",$cid1);
-			$this->db->where("pid",$pid);
+			//$this->db->where("pid",$pid);
 			$this->db->where("daily_shift_id",$shift);
 			$this->db->where("daily_no",$daily_no);
 			
@@ -1392,6 +1491,48 @@ class Daily_shift_model extends CI_Model{
          }
 		 
 		 
+		  public function OldTotalPropaneSales($shift,$daily_no,$user_id) 
+	    {
+	         
+			$cid = $this->gasolinereceived_model->getCompanyId();
+		    $cid1 = $cid['0']->c_id;
+			$this->db->select('old_propane_sales');
+            $this->db->from('daily_entry');
+            $this->db->where("c_id",$cid1);
+			//$this->db->where("pid",$pid);
+			$this->db->where("daily_shift_id",$shift);
+			$this->db->where("daily_no",$daily_no);
+			
+			$this->db->where("user_id",$user_id);
+            $query = $this->db->get();
+            $page1 = $query->result();
+			
+            return $page1[0]->old_propane_sales;
+
+         }
+		 
+		 
+		  public function TotalGallonsSold($shift,$daily_no,$user_id) 
+	    {
+	         
+			$cid = $this->gasolinereceived_model->getCompanyId();
+		    $cid1 = $cid['0']->c_id;
+			$this->db->select('total_gallons_sold');
+            $this->db->from('daily_entry');
+            $this->db->where("c_id",$cid1);
+			//$this->db->where("pid",$pid);
+			$this->db->where("daily_shift_id",$shift);
+			$this->db->where("daily_no",$daily_no);
+			
+			$this->db->where("user_id",$user_id);
+            $query = $this->db->get();
+            $page1 = $query->result();
+			
+            return $page1[0]->total_gallons_sold;
+
+         }
+		 
+		 */
 		 
 		 
 		 
@@ -1516,6 +1657,8 @@ class Daily_shift_model extends CI_Model{
 
          }
 		 
+		 
+	
 		
 
 

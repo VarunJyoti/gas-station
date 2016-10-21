@@ -29,7 +29,7 @@ class Mainproduct_model extends CI_Model{
 	{
 		
 		
-		$data 	= $this->array_from_post(self::$db_fields);	
+		//$data 	= $this->array_from_post(self::$db_fields);	
 		
 		
 		if($id)
@@ -39,98 +39,57 @@ class Mainproduct_model extends CI_Model{
             
 			$table = 'price';
 		    
-			$price = $this->input->post("price");
-			$old_price = $this->input->post("old_price");
+			
 			
 			$c_id  = $this->company_model->getCompanyLoginId();
-			 
-			
-			// price change code starts
-			
-			$PriceBeforeChange=$this->getProductPriceByIDandCID($id,$c_id)->s_price;
-			
-			if($price != $PriceBeforeChange)
-			{
-			$old_price = $PriceBeforeChange;	
-			}
-			
-			if(($user_type = 'enduser') && ($price != $PriceBeforeChange))
-	     {
-			 $result = $this->CheckPidExist($c_id,$id);
-			 if(empty($result))
+			$price_change_status = $this->getEnduserData($c_id)->price_change_status;
+			 if(($user_type == 'enduser') && ($price_change_status == 0) )
 			 {
-		    $EndRowId = $this->getEnduserData($c_id)->id;
-			$EndRowPid = $this->getEnduserData($c_id)->pid;
-			$total_no_of_pid = substr_count($EndRowPid, ',')+1; 
-			$company_pid = count(unserialize($this->CountNoOfPId($c_id)->p_id));
+			   $EndRowId = $this->getEnduserData($c_id)->id; 
+			   $EndRowId = $this->getEnduserData($c_id)->id; 
+		       $price = $this->input->post("price");
+			   $old_price = $this->input->post("oldd_price");
+			   $id = $this->input->post("id");
+			  
+			   
+			   
+			   $modified_date  = date("Y-m-d H:i:s", time());
+				   foreach($id as $row)
+				   {
+                    
+		              $data['s_price'] = $price[$row];
+		              $data['price'] = $price[$row];
+		              $data['old_price'] = $old_price[$row];
+		              $data['date_modified'] = $modified_date;
+		              
+					  
+					  $this->db->where('id', $row);
+			          $insert = $this->db->update($table ,$data);
 			
-			if($total_no_of_pid < $company_pid)
-			{
-				 
 			
-			$pid1= $EndRowPid;
-			$pid2= $id;
-			if($pid1 =='') 
-			{
-			$pid= $pid2;
-			}
-			else{
-				$pid= $pid1.",".$pid2;
-				
-			}
-			
-			$data1 = array('price_change_status' =>'0', 'pid'=>$pid);
-			$this->db->where('id', $EndRowId);
-            $this->db->update('daily_shift', $data1);
-			
-			$this->db->delete('price', array('pid' => $id,'c_id'=>$c_id));
-			$s_price = $this->input->post("price");
-		
-		    $modified_date  = date("Y-m-d H:i:s", time());
-		
-			$modified_date= date("Y-m-d H:i:s", time());
-			
-			$data = array('pid'=> $id,'c_id'=> $c_id,'price'=> $price, 's_price'=> $s_price, 'old_price'=> $old_price,  'date_modified'=> $modified_date);
-			
-			$insert=$this->db->insert($table ,$data);
-			
+				   }
+				   
+		             $EndRowId = $this->getEnduserData($c_id)->id;
+			         $EndRowPid = $this->getEnduserData($c_id)->pid;
+			         $data2 = array('price_change_status' =>'1');
+			         $this->db->where('id', $EndRowId);
+                     $this->db->update('daily_shift', $data2);
 			 }
-			 
-			 else{
-				
-			$data1 = array('price_change_status' =>'1', 'pid'=>$EndRowPid);
-			$this->db->where('id', $EndRowId);
-            $this->db->update('daily_shift', $data1); 
-			 }
-			 
-			    }
-		 else{
-			 
-			$EndRowId = $this->getEnduserData($c_id)->id;
-			$EndRowPid = $this->getEnduserData($c_id)->pid;
-			$data2 = array('price_change_status' =>'1', 'pid'=>$EndRowPid);
-			$this->db->where('id', $EndRowId);
-            $this->db->update('daily_shift', $data2);
-			 
-		    redirect("admin/enduser/pricechange"); 
-				 
-		}
 			
-	 }
 			 // price change code ends
 			 
-			 else if($user_type = 'admin')
+			 if($user_type == 'admin')
 				 
-				 {
-			 
+			{
+			//die('err');
 			$this->db->delete('price', array('pid' => $id,'c_id'=>$c_id));
 			$s_price = $this->input->post("price");
-		
-		    $modified_date  = date("Y-m-d H:i:s", time());
+		    $price = $this->input->post("price");
+		    $date_created  = date("Y-m-d H:i:s", time());
 		
 			$modified_date= date("Y-m-d H:i:s", time());
 			
-			$data = array('pid'=> $id,'c_id'=> $c_id,'price'=> $price, 's_price'=> $s_price, 'old_price'=> $old_price,  'date_modified'=> $modified_date);
+			$data = array('pid'=> $id,'c_id'=> $c_id,'price'=> $price, 's_price'=> $s_price, 'old_price'=> $old_price,  'date_created'=> $date_created);
 			
 			$insert=$this->db->insert($table ,$data);
 			
@@ -141,6 +100,7 @@ class Mainproduct_model extends CI_Model{
 				return true;
 				
 			}else{
+				
 				return false;
 			}
 

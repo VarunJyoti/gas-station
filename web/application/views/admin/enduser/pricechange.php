@@ -1,4 +1,12 @@
 <!-- BEGIN CONTENT -->
+<?php
+if ($status != 'close')
+{
+	$c_id  = $this->company_model->getCompanyLoginId();
+    $price_change_status = $this->mainproduct_model->getEnduserData($c_id)->price_change_status;
+	if($price_change_status == 0)
+	{
+?>
 <div class="page-content-wrapper">
 	<div class="page-content">	
 	
@@ -34,7 +42,15 @@
 	</div-->
 		
 	<h5 class="text-uppercase strong separator bottom margin-none"></h5>
-	<!-- Table -->
+	
+	
+	
+	
+	
+	
+	
+	<form class="form-horizontal" action="<?php echo base_url('admin/enduser/saveprice');?>" id="edit_page"  method="post" autocomplete="off">
+	
 	<table class="footable table table-striped table-bordered table-white table-primary">
 	
 		<!-- Table heading -->
@@ -47,27 +63,23 @@
 				
 			    <th data-hide="Heading,tablet">Price</th>
 				
-				<th colspan="3">Action</th>
+				
 			</tr>
 		</thead>
-		<!-- // Table heading END -->
-		
-		<!-- Table body -->
-		<tbody>
+	
+	
+	<tbody>
 		
 			<!-- Table row -->
 			 <?php
-				
-				if(!empty($page1)){
+			 
+			
 					$s_no =1;
-					if($start)
-					{
-					$s_no =$start+$s_no;
-										
-					}
-					//print_r($page1 );die;
+					
+					$pid=$this->product_model->getProductID()->pid;
 					foreach($page1 as $page)
 					{	
+						  $price_id=$this->product_model->getProductPriceByID($page->id)->id;
 						 $price=$this->product_model->getProductPriceByID($page->id)->price;
 						if($price==''){
 							$price='00.00';
@@ -82,31 +94,27 @@
 						}
 						$strtotime = $comp->createtime;
 						$date = date('d M Y',$strtotime);
-						echo ' <tr class="gradeX">';
-						echo " <td>{$s_no}</td>";
-						echo " <td>{$page->p_name}</td>";
-						echo " <td>{$old_price}</td>";
-						echo " <td>{$s_price}</td>";
+					?>
+					
 						
+						<tr class="gradeX">
+						<td><?php echo $s_no; ?></td>
+						<td><?php echo $page->p_name; ?></td>
+						<input type="hidden"  name="oldd_price[<?php echo $price_id; ?>]"  value="<?php echo $s_price; ?>" placeholder="<?php echo $s_price; ?>">
+						<td><input readonly   name="old_price[<?php echo $price_id; ?>]"  value="<?php echo $old_price; ?>" placeholder="<?php echo $old_price; ?>"></td>
+						<td><input  name="price[<?php echo $price_id; ?>]"  value="<?php echo $s_price; ?>" placeholder="<?php echo $s_price; ?>"></td>
+					    <input type="hidden" name="id[]" value="<?php echo $price_id;?>">
+					   
+					   
 						
+					    
 						
-						
-						
-						?>
-						<td class="center"><a class='btn btn-primary btn-mini' href='<?php echo  base_url("admin/enduser/edit_main_price/{$page->id}");?>'><i class='icon-edit icon-white'></i> Edit </a>
-						
-						</td>
 					<?php
 						$s_no++;
 					}
-				}else{
-					echo ' <tr class="gradeX">';
-					echo " <td>No record found</td>";
-					echo "</tr>";
-				}
 				
 			 ?>    
-			
+			<tr><td colspan="4"><center><button type="submit" name='save_page' value='Save' class="btn green btn-primary glyphicons circle_ok"><i></i>UPDATE</button></center></td></tr>
 			<!-- // Table row END -->
 			
 			
@@ -114,8 +122,16 @@
 		<!-- // Table body END -->
 		
 	</table>
-	<!-- // Table END -->
-</div>
-</div>
-</div>
 	
+	</form>
+	
+
+</div>
+</div>
+</div>
+	</div>
+	
+	<?php
+}
+  }
+	?>

@@ -337,8 +337,9 @@ class Enduser extends Admin_Controller {
 		$data['title'] = "$SITE_TITLE Admin || Add Page";
 		if($this->input->post('save_page'))
 		{
-			$id 	=	$this->input->post("p_id")?$this->input->post("p_id"):NULL;
 			
+			$id 	=	$this->input->post("id")?$this->input->post("id"):NULL;
+			//print_r($id); die('lkjl');
 			if($id)
 			{
 				
@@ -350,6 +351,7 @@ class Enduser extends Admin_Controller {
 			} 		
 			
 		} else {
+			$this->session->set_flashdata('error', '<div class="alert alert-success "><span>Record Updated SuccesFully</span></div> ');
 			redirect("admin/enduser/pricechange");
 		}
 	}
