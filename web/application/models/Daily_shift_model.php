@@ -249,7 +249,7 @@ class Daily_shift_model extends CI_Model{
 		} 
 		
 		else {
-		
+		      
 			$shiftdata = $this->getUserShiftData();
 			$user_id = $shiftdata['user_id'];
 			$shift_id = $shiftdata['shift'];
@@ -257,11 +257,19 @@ class Daily_shift_model extends CI_Model{
 			$daily_no = $shiftdata['daily_no'];
 			$login_time = $shiftdata['login_time'];
 			$logout_time = date("Y-m-d H:i:s", time());
-			
+			$checkNewprice = $this->getNewPrice();
 			$pid = $this->input->post("pid");
 			$open = $this->input->post("open");
 			$received = $this->input->post("received");
 			$total = $this->input->post("total");
+			if(!empty($checkNewprice))
+	        {
+				
+				$old_sale = $this->input->post("old_sale");
+				$old_total_gallons_solds = array_sum($old_sale);
+				$old_gas_sales = $this->input->post("old_gas_sales");
+				
+	         }
 			$sale = $this->input->post("sale");
 			$total_gallons_solds = array_sum($sale);
 			$balance = $this->input->post("balance");
@@ -319,7 +327,13 @@ class Daily_shift_model extends CI_Model{
 		$data['balance'] = $balances;
 		$data['vroot'] = $vroot[$row];
 		$data['diff'] = $diffs;
-	
+	if(!empty($checkNewprice))
+	        {
+				$data['old_gas_sales'] = $old_gas_sales;
+                $data['old_propane_sales'] = $old_propane_sales;
+                $data['old_sale'] = $old_sale[$row];
+			
+			}
         $data['user_id'] = $user_id;
         $data['store_sales'] = $store_sales;
         $data['gas_sales'] = $gas_sales;
@@ -1657,7 +1671,37 @@ class Daily_shift_model extends CI_Model{
 
          }
 		 
+		public function snapp_img()
+	{
+		
+		
+		$tablee = 'webcam';
+		$shiftdata = $this->getUserShiftData();
+	    $user_id = $shiftdata['user_id'];
+	    $cam_img = $this->input->post('snapp');
+		
+		$dataa = array('id'=> NULL, 'user_id'=> $user_id, 'cam_img'=> $cam_img);
+        $this->db->insert($tablee,$dataa);
+							  // 07-10-2016
+						return true;
+	}
 		 
+		
+  public function getSnapImage() 
+	    {
+	         $company_id = $this->getCompanyId();
+			 $cid =  $company_id['0']->c_id;
+			$shiftdata = $this->getUserShiftData();
+	        $user_id = $shiftdata['user_id'];
+			
+            
+			$this->db->where("user_id",$user_id);
+			$this->db->order_by("id",'DESC');
+            $query = $this->db->get('webcam');
+            $page1 = $query->row_array();
+            return $page1;
+
+         }		
 	
 		
 

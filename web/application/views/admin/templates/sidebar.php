@@ -156,7 +156,7 @@ $usr_type = loginUser();
 				
 				?>" >							
 				<a href="<?php echo base_url('/admin/company/');?>">								
-				<i class="icon-paper-plane"></i>								
+												
 				Company List															
 				</a>						
 				</li>						
@@ -183,7 +183,7 @@ $usr_type = loginUser();
 				
 				?>">							
 				<a href="<?php echo base_url('/admin/product/');?>">								
-				<i class="icon-paper-plane"></i>								
+												
 				Product List															
 				</a>						
 				</li>
@@ -211,15 +211,15 @@ if($usr_type =='admin')
 				<span class="arrow open"></span>					
 				</a>					
 				<ul class="sub-menu">
-                 <li>							
+                 <li class="<?php if(in_array('company/',$page_url)){ echo 'active open';}?>">							
 				<a href="<?php echo base_url('/admin/company/');?>">								
-				<i class="icon-paper-plane"></i>								
+												
 				View company Details															
 				</a>						
 				</li>
 				
 				
-				<li>							
+				<li class="<?php if(in_array('mainproduct',$page_url)){ echo 'active open';}?>">							
 				<a href="<?php echo base_url('/admin/company/mainproduct');?>">							
 											
 				Manage main product</a>						
@@ -238,7 +238,7 @@ if($usr_type =='admin')
 				<ul class="sub-menu">
                  <li>							
 				<a href="<?php echo base_url('/admin/product/');?>">								
-				<i class="icon-paper-plane"></i>								
+												
 				Product List															
 				</a>						
 				</li>
@@ -265,7 +265,7 @@ if($usr_type =='admin')
 			
 				<li>							
 				<a href="<?php echo base_url('/admin/enduser/');?>">								
-				<i class="icon-paper-plane"></i>								
+												
 				End User List															
 				</a>						
 				</li>
@@ -279,7 +279,7 @@ if($usr_type =='admin')
 				
 				<li>							
 				<a href="<?php echo base_url('/admin/company/records');?>">								
-				<i class="icon-paper-plane"></i>								
+												
 				View Records															
 				</a>						
 				</li>
@@ -309,38 +309,38 @@ if ($status != 'close')
 				</a>					
 				<ul class="sub-menu">
 
-			   <li>							
+			   <li class="<?php if(in_array('drops',$page_url)){ echo 'active open';}?>">							
 				<a href="<?php echo base_url('/admin/enduser/drops');?>">							
 											
 				Drops Entry</a>						
 				</li>
 				
-				<li>							
+				<li class="<?php if(in_array('payouts',$page_url)){ echo 'active open';}?>">							
 				<a href="<?php echo base_url('/admin/enduser/payouts');?>">							
 											
 				Payouts Entry</a>						
 				</li>
 				
-			    <li>							
+			    <li class="<?php if(in_array('gasoline_received_form',$page_url)){ echo 'active open';}?>">							
 				<a href="<?php echo base_url('/admin/enduser/gasoline_received_form');?>">							
 											
 				Gasoline Received Entry</a>						
 				</li>
 
-                <li>							
+                <li class="<?php if(in_array('store_sales',$page_url)){ echo 'active open';}?>">							
 				<a href="<?php echo base_url('/admin/enduser/store_sales');?>">							
 											
 				Store sales Entry</a>						
 				</li>				
 				
-                <li>							
+                <li class="<?php if(in_array('Last3records',$page_url)){ echo 'active open';}?>">							
 				<a href="<?php echo base_url('/admin/enduser/Last3records');?>">							
 											
 				View Last 3 records</a>						
 				</li>
 				
 			
-				 <li>							
+				 <li class="<?php if(in_array('pricechange',$page_url)){ echo 'active open';}?>">							
 				<a href="<?php echo base_url('/admin/enduser/pricechange');?>">							
 											
 				Change Price</a>						

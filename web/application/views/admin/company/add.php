@@ -77,18 +77,27 @@ Add New Company  <small></small>
 						<div class="form-group">
 							<label class="control-label col-md-3" for="p_id">Gasoline products<span class="required">* </span></label>
 							<div class="col-md-4">
-							
-							<?php 
-							foreach ($products as $all_pname) {
-                             echo ' <input type="checkbox" name="p_id[]" value="'.$all_pname->id.'" ><label>'.$all_pname->p_name.'</label>';
-                            }
-							?>
-							<label class="control-label col-md-5"  ></label>
-							
+								<div class="check_box_all">
+									<?php 
+									foreach ($products as $all_pname) {
+									 echo ' <input  type="checkbox" name="p_id[]" value="'.$all_pname->id.'" ><label>'.$all_pname->p_name.'</label>';
+									}
+									?>
+									<label class="control-label col-md-3"  ></label>
+									
+								</div>
 							</div>
 						</div>
 						<!-- // Group END -->
-						
+						<div class="form-group">
+							<label class="control-label col-md-3" for=""><span class="required"></span></label>
+							<div class="col-md-4">
+							
+							
+							<label class="control-label col-md-3"  ></label>
+							
+							</div>
+						</div>
 						<!-- Group -->
 						<div class="form-group">
 							<label class="control-label col-md-3" for="heading">Address</label>
@@ -278,7 +287,20 @@ $('#add_page').attr('autocomplete','off');
 			"shift": {
                 required: true
             }
+        },
+		
+		
+		
+		 errorClass: "help-inline",
+        errorElement: "div",
+        highlight:function(element, errorClass, validClass) {
+            $(element).parents('.form-group').addClass('error');
+        },
+        unhighlight: function(element, errorClass, validClass) {
+            $(element).parents('.form-group').removeClass('error');
+            $(element).parents('.form-group').addClass('success');
         }
+		
     });
 
 });

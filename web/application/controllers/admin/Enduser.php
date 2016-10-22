@@ -16,6 +16,7 @@ class Enduser extends Admin_Controller {
 		$this->load->model('mainproduct_model');
 		$this->load->model('store_sales_model');
 		$this->load->model('daily_shift_model');
+		$this->load->model('webcam_model');
 		$this->load->library("ckeditor");
 		$this->load->helper('email');
 		$this->load->helper('url');
@@ -191,6 +192,72 @@ class Enduser extends Admin_Controller {
 		
 	}
 	
+	
+	public function camera()
+	{
+			
+		$SITE_TITLE = SITE_TITLE;
+		$data['title'] = "$SITE_TITLE Admin || Add Page";
+		$data['error'] = "";
+	   
+		$this->layout('enduser/camera',$data);  
+		
+	}
+	
+	
+	public function saveImage()
+	{
+		$p= base_url();
+		
+	   /*write your own code to save to your database*/        
+          
+       $filename =  time() . '.jpg';
+       $filepath = 'uploads/dailyentry/';
+       $filepath1 = $p.'uploads/dailyentry/';
+      // echo $filepath; die('hh');
+      //read the raw POST data and save the file with file_put_contents()
+
+        $result = file_put_contents( $filepath.$filename, file_get_contents('php://input') );
+        if (!$result) {
+	    print "ERROR: Failed to write data to $filename, check permissionsn";
+	    exit();
+               }
+ 
+         echo $filepath1.$filename;
+		  
+	}
+	
+	
+	
+	public function contoh_upload_webcam()
+	{
+			
+		$SITE_TITLE = SITE_TITLE;
+		$data['title'] = "$SITE_TITLE Admin || Add Page";
+		$data['error'] = "";
+	   
+		$this->layout('enduser/contoh_upload_webcam',$data);  
+		
+	}
+	
+		
+  public function saveSnap() 
+		 {
+    if($this->input->post('snapp_img'))
+		{
+		$this->daily_shift_model->snapp_img();
+         
+		echo ' <script>alert("uploaded");</script>';
+		
+		echo ' <script> opener.location.reload(true);</script>';
+		echo ' <script> window.close();</script>';
+		
+             }
+	else {
+		
+		return false;
+	}
+		 }
 	
 	
 	public function payouts()

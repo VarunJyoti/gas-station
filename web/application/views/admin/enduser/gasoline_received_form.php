@@ -76,13 +76,20 @@ width:30%;
 		
 	<h5 class="text-uppercase strong separator bottom margin-none"></h5>
 	
-<form class="form-horizontal" action="<?php echo base_url('admin/enduser/savegasoline');?>" id="edit_page"  method="post" autocomplete="off">
+<form class="form-horizontal" action="<?php echo base_url('admin/enduser/savegasoline');?>" id="edit_page" name="edit_page"  method="post" autocomplete="off">
 	<div class="container">
     <div class="row">
         <div class="col-md-12">
             <div data-role="dynamic-fields">
                 <div class="form-inline">
                  
+				 <div class="form-group" style="padding: 0 20px 0 20px;">
+                        <label class="sr-only" for="field-value">Image</label>
+                        <input  class="form-control" id="p_image[]" name="p_image[]" type="hidden" value='<?php echo set_value('p_image');?>'/>
+						<input readonly type="text" name="snap[]" id="snap[]" placeholder="Take Photo" class="form-control" value="<?php echo  $this->daily_shift_model->getSnapImage()['cam_img'];?>" onclick="return popupSnap();">&nbsp;&nbsp;&nbsp;<image src="<?php echo  $this->daily_shift_model->getSnapImage()['cam_img'];?>" width="50px" height="50px"/>
+						
+                    </div><br/><br/>
+				 
 				 <div class="form-group" style="padding: 0 20px 0 20px;">
                         <label class="sr-only" for="field-value">Date</label>
                         <input type="text" readonly required="required" class="form-control" id="datepicker" name="date[]" max=""  required="required" value="<?php echo date('Y-m-d');?>" placeholder="Date">
@@ -126,11 +133,7 @@ width:30%;
 				   </div>
 				   
 				   
-				    <div class="form-group" style="padding: 0 20px 0 20px;">
-                        <label class="sr-only" for="field-value">Image</label>
-                        <input class="form-control" id="p_image[]" name="p_image[]" type="file" value='<?php echo set_value('p_image');?>'/>
-						
-                    </div>
+				    
 				   <!--
                     <button class="btn btn-danger" data-role="remove">
                         <span class="glyphicon glyphicon-remove"></span>
@@ -495,6 +498,13 @@ function popupWindow(){
 window.open('<?php echo base_url("admin/enduser/confirm_password");?>','popUpWindow','height=400,width=500,left=300,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes');
 return false;
 };
+
+function popupSnap(){
+
+window.open('<?php echo base_url("admin/enduser/camera");?>','popUpWindow','height=400,width=700,left=300,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes');
+return false;
+};
+
 
 $(function() {
     $( "#datepicker" ).datepicker({ minDate: -3, maxDate: "0" ,dateFormat: 'yy-mm-dd'});

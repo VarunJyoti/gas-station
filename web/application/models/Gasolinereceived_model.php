@@ -135,6 +135,7 @@ class Gasolinereceived_model extends CI_Model{
 			$date = $this->input->post("date");
 			$bol_no = $this->input->post("bol_no");
 			$p_image = $this->input->post("p_image");
+			$snap = $this->input->post("snap");
 			$shiftdata = $this->dropspayouts_model->getUserShiftData();
 			$user_id = $shiftdata['user_id'];
 			$shift_id = $shiftdata['shift'];
@@ -156,11 +157,12 @@ class Gasolinereceived_model extends CI_Model{
 		$data['user_id'] = $user_id;
 		$data['date'] = $date[$i];
 		$data['bol_no'] = $bol_no[$i];
-		$data['p_image'] = $p_image[$i];
+		$data['p_image'] = $snap[$i];
         $this->db->insert($table,$data);
         $i++;
-    }
-		
+    }    
+	    $this ->db ->where('user_id', $user_id);
+		$this ->db->delete('webcam');
 			
 
 			if($last_id !== 0){
