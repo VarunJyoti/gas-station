@@ -89,15 +89,6 @@ Add New Company  <small></small>
 							</div>
 						</div>
 						<!-- // Group END -->
-						<div class="form-group">
-							<label class="control-label col-md-3" for=""><span class="required"></span></label>
-							<div class="col-md-4">
-							
-							
-							<label class="control-label col-md-3"  ></label>
-							
-							</div>
-						</div>
 						<!-- Group -->
 						<div class="form-group">
 							<label class="control-label col-md-3" for="heading">Address</label>

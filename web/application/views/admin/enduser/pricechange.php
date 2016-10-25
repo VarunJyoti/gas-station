@@ -4,8 +4,8 @@ if ($status != 'close')
 {
 	$c_id  = $this->company_model->getCompanyLoginId();
     $price_change_status = $this->mainproduct_model->getEnduserData($c_id)->price_change_status;
-	if($price_change_status == 0)
-	{
+	$checkNewprice = $this->daily_shift_model->getNewPrice();
+	$price_change = $this->mainproduct_model->getEnduserData($c_id)->price_change;
 ?>
 <div class="page-content-wrapper">
 	<div class="page-content">	
@@ -113,8 +113,15 @@ if ($status != 'close')
 						$s_no++;
 					}
 				
-			 ?>    
+			 ?> 
+<?php
+if($price_change_status == 0)
+{
+?>			 
 			<tr><td colspan="4"><center><button type="submit" name='save_page' value='Save' class="btn green btn-primary glyphicons circle_ok"><i></i>UPDATE</button></center></td></tr>
+			<?php
+			}
+			?>
 			<!-- // Table row END -->
 			
 			
@@ -132,6 +139,6 @@ if ($status != 'close')
 	</div>
 	
 	<?php
-}
+
   }
 	?>

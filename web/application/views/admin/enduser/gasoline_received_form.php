@@ -5,6 +5,8 @@ $status = $statusss->status;
 if ($status != 'close')
 {
 	$checkNewprice = $this->daily_shift_model->getNewPrice();
+	$c_id  = $this->company_model->getCompanyLoginId();
+    $price_change = $this->mainproduct_model->getEnduserData($c_id)->price_change;
 ?>
 
 <style>
@@ -163,7 +165,7 @@ width:30%;
 	<tr><td><input readonly  type="text"   value="RECEIVED"></td></tr>
 	<tr><td><input readonly  type="text"   value="TOTAL"></td></tr>
 	<?php
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change == 1)) 
 	{
 	?>
 	<tr><td><input readonly  type="text"   value="OLD SALE"></td></tr>
@@ -265,7 +267,7 @@ width:30%;
 	<tr><td><input style="width:90%;" readonly type="number" step="0.01"  name="received[<?php echo $product ?>]"  value="<?php echo $receiveds;?>" placeholder="<?php echo $received;?>"></td></tr>
 	<tr><td><input style="width:90%;"  type="text" readonly  name="total[<?php echo $product ?>]"   value="<?php echo $this->daily_shift_model->getGasolineBalance($product)->total;?>"></td></tr>
 	<?php
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change == 1))
 	{
 	?>
 	<tr><td><input style="width:90%;"  type="number" step="0.01" min="0" max="<?php echo $totals;?>"   name="old_sale[<?php echo $product ?>]"  value="<?php echo $this->daily_shift_model->getGasolineBalance($product)->old_sale;?>" placeholder="<?php echo $sale;?>"></td></tr>
@@ -287,7 +289,7 @@ width:30%;
 	<td>
 	<table>
 	<?php
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change == 1))
 	{
 	?>
 	<tr><td><input readonly  type="text"   value="OLD GAS SALES"></td></tr>
@@ -296,7 +298,7 @@ width:30%;
 	?>
 	<tr><td><input style="font-weight:bold; width:100%;" readonly  type="text"   value="GAS SALES"></td></tr>
 	<?php
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change == 1))
 	{
 	?>
 	<tr><td><input style="font-weight:bold; width:100%;" readonly  type="text"   value="TOTAL GAS SALES"></td></tr>
@@ -305,7 +307,7 @@ width:30%;
 	?>
 	<tr><td><input readonly  type="text"   value="STORE SALES"></td></tr>
 	<?php
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change == 1))
 	{
 	?>
 	<tr><td><input readonly  type="text"   value="OLD PROPANE SALES"></td></tr>
@@ -314,7 +316,7 @@ width:30%;
 	?>
 	<tr><td><input style="font-weight:bold; width:100%;" readonly  type="text"   value="PROPANE SALES"></td></tr>
 	<?php
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change == 1))
 	{
 	?>
 	<tr><td><input style="font-weight:bold; width:100%;" readonly  type="text"   value="TOTAL PROPANE SALES"></td></tr>
@@ -334,7 +336,7 @@ width:30%;
 	<td>
 	<table>
 	<?php
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change == 1))
 	{
 	?>
 	<tr><td><input style="width:80%;"  type="text" readonly name="old_gas_sales"  value="<?php echo $this->daily_shift_model->getGasolineRecords()->old_gas_sales;?>"></td></td></tr>
@@ -343,7 +345,7 @@ width:30%;
 	?>
 	<tr><td><input style="width:80%;"  type="text" readonly name="gas_sales"  value="<?php echo $this->daily_shift_model->getGasolineRecords()->gas_sales;?>"></td></td></tr>
 	<?php
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change == 1))
 	{
 	?>
 	<tr><td><input style="width:80%;"  type="text" readonly name="total_gas_sales"  value="<?php echo $total_gas_sales;?>"></td></td></tr>
@@ -352,7 +354,7 @@ width:30%;
 	?>
 	<tr><td><input style="width:80%;"  type="text" readonly name="store_sales"  value="<?php echo $store_sales;?>" placeholder="<?php echo $store_sales;?>"></td></tr>
 	<?php
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change == 1))
 	{
 	?>
 	<tr><td><input style="width:80%;"  type="text" readonly name="old_propane_sales"  value="<?php echo $this->daily_shift_model->getGasolineRecords()->old_propane_sales;?>"></td></tr>
@@ -361,7 +363,7 @@ width:30%;
 	?>
 	<tr><td><input style="width:80%;"  type="text" readonly name="propane_sales"  value="<?php echo $this->daily_shift_model->getGasolineRecords()->propane_sales;?>"></td></tr>
 	<?php
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change == 1))
 	{
 	?>
 	<tr><td><input style="width:80%;"  type="text" readonly name="total_propane_sales"  value="<?php echo $total_propane_sales;?>"></td></tr>

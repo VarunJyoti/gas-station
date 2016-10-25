@@ -56,20 +56,22 @@ width:30%;
   
    <td> 
 	  <select name="date" required="required">
+	  <option value=''>SELECT DAILY</option>
      <?php 
-     foreach($shiftDate as $dates)
+     foreach($Daily_no as $daily)
      {
 		 $datess= $dates->date;
 		$date = date("Y-m-d",strtotime($datess) );
 
 	  ?>  
-	  <option value='<?php echo $date;?>'><?php echo $date;?></option>
+	  <option value='<?php echo $daily->daily_no;?>'><?php echo $daily->daily_no;?></option>
 	 <?php   
     }
     ?>
     </select>
     <td> 
 	  <select name="shift" required="required">
+	  <option value=''>SELECT SHIFT</option>
      <?php 
      foreach($shiftNo as $no)
      {
@@ -133,7 +135,7 @@ width:30%;
 	<input    readonly   name="open[<?php echo $row->open; ?>]"  value="<?php echo $row->open; ?>"></td></tr>
 	<tr><td><input type="number" step="0.01"  readonly name="received"  value="<?php echo $row->received; ?>" placeholder=""></td></tr>
 	<tr><td><input  type="text" readonly  name="total"  value="<?php echo $row->total; ?>"></td></tr>
-	<tr><td><input  type="number" step="0.01" readonly  name="sale"  value="<?php echo $row->sale;  ?>" placeholder=""></td></tr>
+	<tr><td><input  type="number" step="0.01" readonly  name="sale"  value="<?php echo $sale = ($row->sale)+($row->old_sale);  ?>" placeholder=""></td></tr>
 	<tr><td><input  type="text" readonly  name="balance"  value="<?php echo $row->balance; ?>"></td></tr>
 	<?php if($row->pid!=64){   ?>
 	<tr><td><input  type="number" step="0.01" readonly name="vroot"  value="<?php echo $row->vroot; ?>" placeholder=""></td></tr>
@@ -160,9 +162,9 @@ width:30%;
 	
 	<td>
 	<table>
-	<tr><td><input  type="text" readonly name="gas_sales"  value="<?php echo $row->gas_sales; ?>"></td></td></tr>
+	<tr><td><input  type="text" readonly name="gas_sales"  value="<?php echo $sales = ($row->gas_sales)+($row->old_gas_sales); ?>"></td></td></tr>
 	<tr><td><input  type="text" readonly name="store_sales"  value="<?php echo $row->store_sales; ?>"></td></tr>
-	<tr><td><input  type="text" readonly name="propane_sales"  value="<?php echo $row->propane_sales; ?>"></td></tr>
+	<tr><td><input  type="text" readonly name="propane_sales"  value="<?php echo $propane_sales = ($row->propane_sales)+($row->old_propane_sales); ?>"></td></tr>
 	<tr><td><input  type="text" readonly name="amount_required"  value="<?php echo $row->amount_required; ?>"></td></tr>
 	<tr><td><input  type="text" readonly name="credit_cards"  value="<?php echo $row->credit_cards; ?>"></td></tr>
 	<tr><td><input  type="text" readonly name="drops_total"  value="<?php echo $row->drops_total; ?>"></td></tr>
@@ -173,7 +175,7 @@ width:30%;
 	</td>
 	
 	</tr>
-	<tr><td>TOTAL GALLONS SOLD:</td><td colspan="<?php echo $rcount; ?>"><input  type="text" readonly name="total_gallons_sold"  value="<?php echo $row->total_gallons_sold; ?>"></td><td>OVERSHORT</td><td><input  type="text" readonly name="overshort"  value="<?php echo $row->overshort; ?>"></td></tr>
+	<tr><td>TOTAL GALLONS SOLD:</td><td colspan="<?php echo $rcount; ?>"><input  type="text" readonly name="total_gallons_sold"  value="<?php echo $gallons = ($row->total_gallons_sold)+($row->old_total_gallons_sold); ?>"></td><td>OVERSHORT</td><td><input  type="text" readonly name="overshort"  value="<?php echo $row->overshort; ?>"></td></tr>
 	 
 	</table>
 	<?php 

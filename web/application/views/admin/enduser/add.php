@@ -246,6 +246,15 @@ $('#add_page').attr('autocomplete','off');
                 required: true,
 				minlength:5
             } 
+        },
+		errorClass: "help-inline",
+        errorElement: "span",
+        highlight:function(element, errorClass, validClass) {
+            $(element).parents('.form-group').addClass('error');
+        },
+        unhighlight: function(element, errorClass, validClass) {
+            $(element).parents('.form-group').removeClass('error');
+            $(element).parents('.form-group').addClass('success');
         }
     });
 

@@ -207,6 +207,7 @@ $('input[type=checkbox],input[type=radio],input[type=file]').uniform();
     $("#add_page").validate({
         rules: {
             p_name: "required",
+			p_price: "required",
             
 			
 			
@@ -233,6 +234,7 @@ confirm_password: {
         },
         messages: {
             p_name: "Please Enter Product Name",
+			 p_price: "Please Enter Product Price",
            
 			
 		

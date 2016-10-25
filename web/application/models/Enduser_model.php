@@ -422,6 +422,7 @@ class Enduser_model extends CI_Model{
 			$data1 = array('status'=> '0');
 			$this->db->where('id', $id);
 			$result = $this->db->update($table1, $data1);
+			$result = 0;
 			return $result;
 		}
 		

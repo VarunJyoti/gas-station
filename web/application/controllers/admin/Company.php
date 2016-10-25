@@ -210,7 +210,7 @@ class Company extends Admin_Controller {
 		$data['title'] = "$SITE_TITLE Admin || View page";
 		
 		  $data['shiftNo'] 	=	$this->company_model->getShiftNo();
-		  $data['shiftDate'] 	=	$this->company_model->getShiftDate();
+		  $data['Daily_no'] 	=	$this->company_model->getDaily_no();
 			if($this->input->get('find')){
 			$shift = $this->input->get("shift");
 			
@@ -309,8 +309,13 @@ class Company extends Admin_Controller {
 		if($email)
 		{			
 			$result 			=	$this->company_model->deletePage($email);
+			if($result == 0)
+			{
+			$this->session->set_flashdata('error', '<div class="alert alert-success "><span style="color:red;">User Blocked SuccesFully. This User can not be Deleted!!</span></div> ');				
+			}
+			else{
 			$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Record Deleted SuccesFully</span></div> ');			
-			//redirect("admin/company");
+			}
 				
 			
 		}

@@ -201,8 +201,9 @@ class Company_model extends MY_Model{
 			$table2= 'cd_company';
 			$data2 = array('status'=> '0');
 			$this->db->where('id', $c_id);
-			$result1 = $this->db->update($table2, $data2);
-			return $result1;
+			$result = $this->db->update($table2, $data2);
+			$result = 0;
+			return $result;
 		}
 		
 
@@ -432,8 +433,9 @@ class Company_model extends MY_Model{
           $this->db->select('daily_no');
  
 		 $this->db->where('c_id	',$cid1);
+		 $this->db->where('status','close');
 		 $this->db->order_by('date','DESC');
-		 $query = $this->db->get('daily_entry')->result();
+		 $query = $this->db->get('daily_number')->result();
 		
 	   return $query;
 	   

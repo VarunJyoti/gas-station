@@ -71,7 +71,7 @@ class Mainproduct_model extends CI_Model{
 				   
 		             $EndRowId = $this->getEnduserData($c_id)->id;
 			         $EndRowPid = $this->getEnduserData($c_id)->pid;
-			         $data2 = array('price_change_status' =>'1');
+			         $data2 = array('price_change_status' =>'1', 'price_change' =>'1');
 			         $this->db->where('id', $EndRowId);
                      $this->db->update('daily_shift', $data2);
 			 }

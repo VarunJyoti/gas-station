@@ -74,7 +74,7 @@ class Daily_shift_model extends CI_Model{
 			$received = $this->input->post("received");
 			
 			$total = $this->input->post("total");
-			if(!empty($checkNewprice))
+			if((!empty($checkNewprice)) && ($price_change_status == 1))
 			{
 				
 				$old_sale = $this->input->post("old_sale");
@@ -110,7 +110,7 @@ class Daily_shift_model extends CI_Model{
 			$propane_product_old_price  =	$this->getProductOldPrice(64);
 			
 		
-			if(!empty($checkNewprice))
+			if((!empty($checkNewprice)) && ($price_change_status == 1))
 			{
 				
 			 if($row1 != 64)
@@ -148,7 +148,7 @@ class Daily_shift_model extends CI_Model{
 			}
 			
 		$amount_required = ($gas_sales+$propane_sales+$store_sales);
-		if(!empty($checkNewprice))
+		if((!empty($checkNewprice)) && ($price_change_status == 1))
 	  {
 		$amount_required = ($gas_sales+$old_gas_sales+$propane_sales+$old_propane_sales+$store_sales);
 	   }
@@ -168,7 +168,7 @@ class Daily_shift_model extends CI_Model{
 		 $vroots= $vroot[$row];
 		 $product_price  =	$this->getProductPrice($row);
        
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change_status == 1))
 	{
 		$old_sales = $old_sale[$row];
 		$data['old_sale'] = $old_sale[$row];
@@ -256,13 +256,14 @@ class Daily_shift_model extends CI_Model{
 			$uid = $shiftdata['id'];
 			$daily_no = $shiftdata['daily_no'];
 			$login_time = $shiftdata['login_time'];
+			$price_change_status = $shiftdata['price_change'];
 			$logout_time = date("Y-m-d H:i:s", time());
 			$checkNewprice = $this->getNewPrice();
 			$pid = $this->input->post("pid");
 			$open = $this->input->post("open");
 			$received = $this->input->post("received");
 			$total = $this->input->post("total");
-			if(!empty($checkNewprice))
+			if((!empty($checkNewprice)) && ($price_change_status == 1))
 	        {
 				
 				$old_sale = $this->input->post("old_sale");
@@ -327,7 +328,7 @@ class Daily_shift_model extends CI_Model{
 		$data['balance'] = $balances;
 		$data['vroot'] = $vroot[$row];
 		$data['diff'] = $diffs;
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change_status == 1))
 	        {
 				$data['old_gas_sales'] = $old_gas_sales;
                 $data['old_propane_sales'] = $old_propane_sales;
@@ -391,7 +392,7 @@ class Daily_shift_model extends CI_Model{
 			$received = $this->input->post("received");
 			
 			$total = $this->input->post("total");
-			if(!empty($checkNewprice))
+			if((!empty($checkNewprice)) && ($price_change_status == 1))
 			{
 				
 				$old_sale = $this->input->post("old_sale");
@@ -427,7 +428,7 @@ class Daily_shift_model extends CI_Model{
 			$propane_product_old_price  =	$this->getProductOldPrice(64);
 			
 		
-			if(!empty($checkNewprice))
+			if((!empty($checkNewprice)) && ($price_change_status == 1))
 			{
 				
 			 if($row1 != 64)
@@ -465,7 +466,7 @@ class Daily_shift_model extends CI_Model{
 			}
 			
 		$amount_required = ($gas_sales+$propane_sales+$store_sales);
-		if(!empty($checkNewprice))
+		if((!empty($checkNewprice)) && ($price_change_status == 1))
 	  {
 		$amount_required = ($gas_sales+$old_gas_sales+$propane_sales+$old_propane_sales+$store_sales);
 	   }
@@ -485,7 +486,7 @@ class Daily_shift_model extends CI_Model{
 		 $vroots= $vroot[$row];
 		 $product_price  =	$this->getProductPrice($row);
        
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change_status == 1))
 	{
 		$old_sales = $old_sale[$row];
 		$data['old_sale'] = $old_sale[$row];
@@ -681,7 +682,7 @@ class Daily_shift_model extends CI_Model{
 			$received = $this->input->post("received");
 			
 			$total = $this->input->post("total");
-			if(!empty($checkNewprice))
+			if((!empty($checkNewprice)) && ($price_change_status == 1))
 			{
 				
 				$old_sale = $this->input->post("old_sale");
@@ -717,7 +718,7 @@ class Daily_shift_model extends CI_Model{
 			$propane_product_old_price  =	$this->getProductOldPrice(64);
 			
 		
-			if(!empty($checkNewprice))
+			if((!empty($checkNewprice)) && ($price_change_status == 1))
 			{
 				
 			 if($row1 != 64)
@@ -755,7 +756,7 @@ class Daily_shift_model extends CI_Model{
 			}
 			
 		$amount_required = ($gas_sales+$propane_sales+$store_sales);
-		if(!empty($checkNewprice))
+		if((!empty($checkNewprice)) && ($price_change_status == 1))
 	  {
 		$amount_required = ($gas_sales+$old_gas_sales+$propane_sales+$old_propane_sales+$store_sales);
 	   }
@@ -775,7 +776,7 @@ class Daily_shift_model extends CI_Model{
 		 $vroots= $vroot[$row];
 		 $product_price  =	$this->getProductPrice($row);
        
-	if(!empty($checkNewprice))
+	if((!empty($checkNewprice)) && ($price_change_status == 1))
 	{
 		$old_sales = $old_sale[$row];
 		$data['old_sale'] = $old_sale[$row];

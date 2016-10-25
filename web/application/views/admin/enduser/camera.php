@@ -74,5 +74,6 @@
         </div><br/><br/><br/>
 		<input type="hidden" name="snapp" id="snapp" value="">
 		<button type="submit" style="float:right; margin-top:170px;" name='snapp_img'  value='OK' class="btn green btn-primary glyphicons circle_ok"><i></i>Save</button>
+		
 		</form>
     </div>

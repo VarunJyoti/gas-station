@@ -120,7 +120,7 @@ width:30%;
     $rcount1= count($Gasoline_Last3Record)+1;
 	foreach($Gasoline_Last3Record as $row)
 	{
-
+    
 	?>
 	<td>
 	<table>
@@ -130,7 +130,7 @@ width:30%;
 	<input    readonly   name="open[<?php echo $row->open; ?>]"  value="<?php echo $row->open; ?>"></td></tr>
 	<tr><td><input type="number" step="0.01"  readonly name="received"  value="<?php echo $row->received; ?>" placeholder=""></td></tr>
 	<tr><td><input  type="text" readonly  name="total"  value="<?php echo $row->total; ?>"></td></tr>
-	<tr><td><input  type="number" step="0.01" readonly  name="sale"  value="<?php echo $row->sale;  ?>" placeholder=""></td></tr>
+	<tr><td><input  type="number" step="0.01" readonly  name="sale"  value="<?php echo $sale = ($row->sale)+($row->old_sale);  ?>" placeholder=""></td></tr>
 	<tr><td><input  type="text" readonly  name="balance"  value="<?php echo $row->balance; ?>"></td></tr>
 	<?php if($row->pid!=64){   ?>
 	<tr><td><input  type="number" step="0.01" readonly name="vroot"  value="<?php echo $row->vroot; ?>" placeholder=""></td></tr>
@@ -157,9 +157,9 @@ width:30%;
 	
 	<td>
 	<table>
-	<tr><td><input  type="text" readonly name="gas_sales"  value="<?php echo $row->gas_sales; ?>"></td></td></tr>
+	<tr><td><input  type="text" readonly name="gas_sales"  value="<?php echo $gas_sales = ($row->gas_sales)+($row->old_gas_sales); ?>"></td></td></tr>
 	<tr><td><input  type="text" readonly name="store_sales"  value="<?php echo $row->store_sales; ?>"></td></tr>
-	<tr><td><input  type="text" readonly name="propane_sales"  value="<?php echo $row->propane_sales; ?>"></td></tr>
+	<tr><td><input  type="text" readonly name="propane_sales"  value="<?php echo $propane_sales=($row->propane_sales)+($row->old_propane_sales); ?>"></td></tr>
 	<tr><td><input  type="text" readonly name="amount_required"  value="<?php echo $row->amount_required; ?>"></td></tr>
 	<tr><td><input  type="text" readonly name="credit_cards"  value="<?php echo $row->credit_cards; ?>"></td></tr>
 	<tr><td><input  type="text" readonly name="drops_total"  value="<?php echo $row->drops_total; ?>"></td></tr>
@@ -170,7 +170,7 @@ width:30%;
 	</td>
 	
 	</tr>
-	<tr><td>TOTAL GALLONS SOLD:</td><td colspan="<?php echo $rcount; ?>"><input  type="text" readonly name="total_gallons_sold"  value="<?php echo $row->total_gallons_sold; ?>"></td><td>OVERSHORT</td><td><input  type="text" readonly name="overshort"  value="<?php echo $row->overshort; ?>"></td></tr>
+	<tr><td>TOTAL GALLONS SOLD:</td><td colspan="<?php echo $rcount; ?>"><input  type="text" readonly name="total_gallons_sold"  value="<?php echo $gallons =($row->total_gallons_sold)+($row->old_total_gallons_sold); ?>"></td><td>OVERSHORT</td><td><input  type="text" readonly name="overshort"  value="<?php echo $row->overshort; ?>"></td></tr>
 	 
 	</table>
 	<?php 

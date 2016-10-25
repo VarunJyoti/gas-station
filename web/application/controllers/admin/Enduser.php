@@ -205,6 +205,9 @@ class Enduser extends Admin_Controller {
 	}
 	
 	
+	
+	
+	
 	public function saveImage()
 	{
 		$p= base_url();
@@ -229,16 +232,7 @@ class Enduser extends Admin_Controller {
 	
 	
 	
-	public function contoh_upload_webcam()
-	{
-			
-		$SITE_TITLE = SITE_TITLE;
-		$data['title'] = "$SITE_TITLE Admin || Add Page";
-		$data['error'] = "";
-	   
-		$this->layout('enduser/contoh_upload_webcam',$data);  
-		
-	}
+	
 	
 		
   public function saveSnap() 
@@ -1012,7 +1006,14 @@ class Enduser extends Admin_Controller {
 		if($id)
 		{		
 				$result 			=	$this->enduser_model->deleteEnduser($id);
-				$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Record Deleted SuccesFully</span></div> ');$this->load->library('user_agent');
+				if($result == 0)
+				{
+				$this->session->set_flashdata('error', '<div class="alert alert-success "><span style="color:red;">User Blocked SuccesFully. This User can not be Deleted!!</span></div> ');$this->load->library('user_agent');
+				}
+				else
+				{
+				$this->session->set_flashdata('success', '<div class="alert alert-success "><span>Record Deleted SuccesFully</span></div> ');$this->load->library('user_agent');	
+				}
 				redirect($this->agent->referrer());
 		
 		}		
